@@ -1,0 +1,15 @@
+import { View, Text } from 'react-native'
+import React from 'react'
+import { Link } from 'expo-router';
+
+
+const Feature1 = () => {
+  return (
+    <View className='flex-1 justify-center items-center'>
+    <Text className='text-5xl'>Feature1</Text>
+    <Link className='absolute bottom-4 right-4 py-10 px-10 text-5xl color-blue-400 font-bold' href='/feature2'>Next</Link>
+  </View>
+  )
+}
+
+export default Feature1
