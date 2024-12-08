@@ -6,7 +6,7 @@ const Main = () => {
   return (
     <SafeAreaProvider className='flex-1'>
     <View className='flex-1 justify-center items-center'>
-      <Text>Main</Text>
+      <Text className='text-9xl font-bold'>Home</Text>
     </View>
     </SafeAreaProvider>
   )
