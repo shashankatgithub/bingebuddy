@@ -1,29 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { Redirect, Stack } from 'expo-router'
-import "../../global.css";
-import * as SplashScreen from 'expo-splash-screen';
-import { MMKV } from 'react-native-mmkv'
+import React from 'react'
+import { Provider } from 'react-redux';
+import store from '../state/store';
+import { Slot } from 'expo-router';
 
-SplashScreen.preventAutoHideAsync();
-const RootNavigation = () => {
-  const storage = new MMKV();
-  const [isLogin,setIsLogin] = useState(false);
-  const [isFirstLaunch, setIsFirstLaunch] = useState<boolean | null>(null);
-  useEffect(() => {
-    SplashScreen.hideAsync();
-  },[]);
-  useEffect(() => {
-    const checkFirstLaunch = async () => {
-      setIsFirstLaunch(true);
-    };
-    checkFirstLaunch();
-  }, []);
+export default function RootLayout() {
   return (
-    <>
-    <Stack screenOptions={{headerShown: false}}/>
-    {isFirstLaunch ? <Redirect href={"/(onboarding)"}/> : isLogin ? <Redirect href={"/(main)"}/> : <Redirect href={"/(auth)"}/>}
-    </>
-  )
+    <Provider store={store}>
+      <Slot />
+    </Provider>
+  );
 }
-
-export default RootNavigation

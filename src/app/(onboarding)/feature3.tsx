@@ -1,23 +1,30 @@
+import React, { useEffect } from 'react'
 import { View, Text } from 'react-native'
-import React from 'react'
-import { Link , useRouter} from 'expo-router';
+import { useRouter } from 'expo-router';
 import Buttons from '@/src/components/atoms/buttons';
+import { useSelector, useDispatch } from 'react-redux';
+import { setIsFirstLaunch } from '@/src/state/userSlice';
+import { RootState } from '@/src/state/store';
 
-/**
- * The third feature of the onboarding flow. This page is a simple screen
- * that displays a button that navigates to the main app when pressed.
- * @returns A component that renders a screen with a button.
- */
 const Feature3 = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const isFirstLaunch = useSelector((state: RootState) => state.user.isFirstLaunch);
+  useEffect(() => {
+    console.log("Updated isFirstLaunch:", isFirstLaunch); // Logs the updated state
+    if (!isFirstLaunch) {
+      router.navigate("/(main)");
+    }
+  }, [isFirstLaunch]); // Run when isFirstLaunch changes
   const onPress = () => {
-    router.navigate("/(main)");
+    console.log("Before Dispatch:", isFirstLaunch);
+    dispatch(setIsFirstLaunch(false));
   }
   return (
     <View className='flex-1 justify-center items-center'>
-    <Text className='text-5xl'>Feature3</Text>
-    <Buttons title={"Lets Binge"} onPress={onPress}/>
-  </View>
+      <Text className='text-5xl'>Feature3</Text>
+      <Buttons title={"Lets Binge"} onPress={onPress} />
+    </View>
   )
 }
 
