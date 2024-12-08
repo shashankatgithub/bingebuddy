@@ -1,44 +1,54 @@
-import React, { useEffect , useState } from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
-import { useRouter } from 'expo-router';
-import Buttons from '@/src/components/atoms/buttons';
-import { useSelector, useDispatch } from 'react-redux';
-import { setIsFirstLaunch } from '@/src/state/userSlice';
-import { RootState } from '@/src/state/store';
+import React, { useEffect, useState } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import Buttons from "@/src/components/atoms/buttons";
+import { useSelector, useDispatch } from "react-redux";
+import { setIsFirstLaunch } from "@/src/state/userSlice";
+import { RootState } from "@/src/state/store";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Feature3 = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const isFirstLaunch = useSelector((state: RootState) => state.user.isFirstLaunch);
-  const [isLoading, setIsLoading] = useState(false); // State for ActivityIndicator
+  const isFirstLaunch = useSelector(
+    (state: RootState) => state.user.isFirstLaunch
+  );
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
-    console.log("Updated isFirstLaunch:", isFirstLaunch); // Logs the updated state
+    console.log("Updated isFirstLaunch:", isFirstLaunch);
     if (!isFirstLaunch) {
-     router.navigate("/(main)");
+      router.navigate("/(main)");
     }
-  }, [isFirstLaunch]); // Run when isFirstLaunch changes
+  }, [isFirstLaunch]);
   const onPress = async () => {
     console.log("Before Dispatch:", isFirstLaunch);
-    setIsLoading(true); // Show ActivityIndicator
-    await sleep(2000); // Wait for 2 seconds
-    dispatch(setIsFirstLaunch(false)); // Update state in Redux
-    setIsLoading(false); // Hide ActivityIndicator
+    setIsLoading(true);
+    await sleep(2000);
+    dispatch(setIsFirstLaunch(false));
+    setIsLoading(false);
 
-    router.push("/(main)"); // Navigate to main page
-  }
+    router.push("/(main)");
+  };
   return (
-    <View className="flex-1 justify-center items-center">
+    <SafeAreaView className="flex-1 justify-center items-center">
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" /> // Show ActivityIndicator
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#000000" />
+        </View>
       ) : (
         <>
-          <Text className="text-5xl">Feature3</Text>
-          <Buttons title={"Lets Binge"} onPress={onPress} />
+          <View className="flex-1 justify-between items-center top-80">
+            <Text className="text-6xl font-bold">Feature3</Text>
+          </View>
+          <View className="bottom-10 right-4 py-10 px-10">
+            <Buttons title={"Lets Binge"} onPress={onPress} />
+          </View>
+
         </>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export default Feature3
+export default Feature3;
