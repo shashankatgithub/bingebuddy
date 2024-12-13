@@ -1,15 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const Main = () => {
+const index = () => {
   return (
-    <SafeAreaProvider className='flex-1'>
-    <View className='flex-1 justify-center items-center'>
-      <Text className='text-6xl font-bold'>Home</Text>
+    <View>
+      <Text>index</Text>
     </View>
-    </SafeAreaProvider>
   )
 }
 
-export default Main
+export default index

@@ -14,6 +14,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const languages = [
   { id: 1, name: "English" },
@@ -117,17 +118,27 @@ const LanguageSelection = () => {
         )}
       />
 
-      {/* Done Button */}
-      {selectedLanguages.length >= 2 && (
-        <View className="absolute bottom-10 left-0 right-0 items-center">
-          <TouchableOpacity
-            className="bg-gray-500 rounded-full px-10 py-3"
-            onPress={handleDonePress}
-          >
-            <Text className="text-white font-bold text-lg">DONE</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Navigation Arrows */}
+      <View className="absolute bottom-10 left-0 right-0 flex-row justify-between px-10">
+        {/* Backward Arrow */}
+        <Pressable
+          className="bg-orange-500 rounded-full w-12 h-12 items-center justify-center"
+          onPress={() => router.back()}
+        >
+          <Ionicons name="chevron-back-sharp" size={24} color="black" />
+        </Pressable>
+
+        {/* Forward Arrow */}
+        <Pressable
+          className={`rounded-full w-12 h-12 items-center justify-center ${
+            selectedLanguages.length >= 2 ? "bg-green-500" : "bg-gray-300"
+          }`}
+          disabled={selectedLanguages.length < 2}
+          onPress={handleDonePress}
+        >
+          <Ionicons name="chevron-forward-sharp" size={24} color="black" />
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 };

@@ -5,10 +5,12 @@ const OnboardingStack = () => {
   return (
     <React.Fragment>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="feature1" />
-        <Stack.Screen name="feature2" />
-        <Stack.Screen name="feature3" />
+        <Stack.Screen name="Onboarding" />
+        <Stack.Screen name="LanguageSelection" />
+        <Stack.Screen name="GenreSelection" />
+        <Stack.Screen name="ArtistSelection" />
+        <Stack.Screen name="SignUp" />
+        <Stack.Screen name="SignIn" />
       </Stack>
     </React.Fragment>
   );

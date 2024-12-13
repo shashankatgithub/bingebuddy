@@ -13,6 +13,10 @@ const SignUp = () => {
   const handleDonePress = () => {
     router.navigate('SignIn');
   };
+
+  const handleApplePress = () => {
+    router.navigate('(main)');
+  };
   return (
     <ImageBackground
       source={imagePath.onboarding_bg} 
@@ -48,7 +52,7 @@ const SignUp = () => {
               Continue with Google
             </Text>
           </Pressable>
-          <Pressable className="flex-row items-center justify-center bg-white rounded-full py-5 mb-5">
+          <Pressable className="flex-row items-center justify-center bg-white rounded-full py-5 mb-5" onPress={handleApplePress}>
             <Text className="text-black font-bold text-xl">
               Continue with Apple
             </Text>

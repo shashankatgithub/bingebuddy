@@ -14,8 +14,10 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated";
-import imagePath from "@/src/constants/imagePath";
 import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import imagePath from "@/src/constants/imagePath";
+
 const artists = [
   { id: 1, name: "Eminem", image: imagePath.artist_img },
   { id: 2, name: "Drake", image: imagePath.artist_img },
@@ -119,17 +121,27 @@ const ArtistSelection = () => {
         )}
       />
 
-      {/* Done Button */}
-      {selectedArtists.length >= 3 && (
-        <View className="absolute bottom-10 left-0 right-0 items-center">
-          <TouchableOpacity
-            className="bg-gray-500 rounded-full px-10 py-3"
-            onPress={handleDonePress}
-          >
-            <Text className="text-white font-bold text-lg">DONE</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Navigation Arrows */}
+      <View className="absolute bottom-10 left-0 right-0 flex-row justify-between px-10">
+        {/* Backward Arrow */}
+        <Pressable
+          className="bg-orange-500 rounded-full w-12 h-12 items-center justify-center"
+          onPress={() => router.back()}
+        >
+          <Ionicons name="chevron-back-sharp" size={24} color="black" />
+        </Pressable>
+
+        {/* Forward Arrow */}
+        <Pressable
+          className={`rounded-full w-12 h-12 items-center justify-center ${
+            selectedArtists.length >= 3 ? "bg-green-500" : "bg-gray-300"
+          }`}
+          disabled={selectedArtists.length < 3}
+          onPress={handleDonePress}
+        >
+          <Ionicons name="chevron-forward-sharp" size={24} color="black" />
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 };
