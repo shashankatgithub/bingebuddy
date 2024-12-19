@@ -5,7 +5,8 @@ import {
   Pressable,
   TextInput,
   FlatList,
-  SafeAreaView
+  SafeAreaView,
+  StyleSheet
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -14,6 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { PrimaryGradient, YouTubeGradient } from "@/src/components/atoms/CustomGradients";
  
 const movieGenres = [
   { id: 1, name: "Action" },
@@ -59,17 +61,18 @@ const GenreSelection = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <PrimaryGradient  style={styles.gradientContainer}>
+    <SafeAreaView className="flex-1 ">
       {/* Header */}
       <View className="px-4 pt-6 pb-10">
-        <Text className="text-black text-2xl font-bold text-center mb-3">
+        <Text className="text-[#EAECEE]  text-2xl font-bold text-center mb-3">
           Choose 2 or more movie genres you like.
         </Text>
         {/* Search Bar */}
         <View className="mt-1 bg-gray-700 rounded-full flex-row items-center px-4 py-2">
           <TextInput
             placeholder="Search"
-            placeholderTextColor="gray"
+            placeholderTextColor="#EAECEE"
             value={searchQuery}
             onChangeText={setSearchQuery}
             className="flex-1 text-white py-2"
@@ -112,7 +115,7 @@ const GenreSelection = () => {
             )}
 
             {/* Genre Name */}
-            <Text className="text-black text-sm mt-2">{item.name}</Text>
+            <Text className="text-[#EAECEE] text-xl mt-2">{item.name}</Text>
           </Pressable>
         )}
       />
@@ -139,7 +142,24 @@ const GenreSelection = () => {
         </Pressable>
       </View>
     </SafeAreaView>
+    </PrimaryGradient>
   );
 };
 
 export default GenreSelection;
+
+
+const styles = StyleSheet.create({
+  gradientContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%", // Full-screen gradient
+  },
+  text: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});

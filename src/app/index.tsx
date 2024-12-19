@@ -16,7 +16,8 @@ const RootNavigation = () => {
   return (
     <>
       {user.isFirstLaunch ? (
-        <Redirect href={"/(onboarding)/Onboarding"} />
+        //<Redirect href={"/(onboarding)/Onboarding"} />
+        <Redirect href={"/(main)/home"}/>
       ) : user.isLogin ? (
         <Redirect href={"/(main)"} />
       ) : (

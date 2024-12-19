@@ -15,7 +15,7 @@ const SignUp = () => {
   };
 
   const handleApplePress = () => {
-    router.navigate('(main)');
+    router.navigate('/(main)/home');
   };
   return (
     <ImageBackground
@@ -52,12 +52,12 @@ const SignUp = () => {
               Continue with Google
             </Text>
           </Pressable>
-          <Pressable className="flex-row items-center justify-center bg-white rounded-full py-5 mb-5" onPress={handleApplePress}>
+          {/* <Pressable className="flex-row items-center justify-center bg-white rounded-full py-5 mb-5" onPress={handleApplePress}>
             <Text className="text-black font-bold text-xl">
               Continue with Apple
             </Text>
-          </Pressable>
-          <Pressable className="flex-row items-center justify-center bg-blue-600 rounded-full py-5 mb-5">
+          </Pressable> */}
+          <Pressable className="flex-row items-center justify-center bg-blue-600 rounded-full py-5 mb-5" onPress={handleApplePress}>
             <Text className="text-white font-bold text-xl">
               Continue with Facebook
             </Text>

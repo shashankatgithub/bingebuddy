@@ -7,6 +7,7 @@ import {
   TextInput,
   FlatList,
   SafeAreaView,
+  StyleSheet
 } from "react-native";
 import { TouchableOpacity } from "react-native";
 import Animated, {
@@ -17,6 +18,7 @@ import Animated, {
 import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import imagePath from "@/src/constants/imagePath";
+import { PrimaryGradient, YouTubeGradient } from "@/src/components/atoms/CustomGradients";
 
 const artists = [
   { id: 1, name: "Eminem", image: imagePath.artist_img },
@@ -68,17 +70,18 @@ const ArtistSelection = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <PrimaryGradient  style={styles.gradientContainer}>
+    <SafeAreaView className="flex-1">
       {/* Header */}
       <View className="px-4 pt-6 pb-10">
-        <Text className="text-black text-2xl font-bold text-center mb-3">
+        <Text className="text-[#EAECEE] text-2xl font-bold text-center mb-3">
           Choose 3 or more artists you like.
         </Text>
         {/* Search Bar */}
         <View className="mt-1 bg-gray-700 rounded-full flex-row items-center px-4 py-2">
           <TextInput
             placeholder="Search"
-            placeholderTextColor="gray"
+            placeholderTextColor="#EAECEE"
             value={searchQuery}
             onChangeText={setSearchQuery}
             className="flex-1 text-white py-2"
@@ -116,7 +119,7 @@ const ArtistSelection = () => {
               </View>
             )}
             {/* Artist Name */}
-            <Text className="text-black text-sm mt-2">{item.name}</Text>
+            <Text className="text-[#EAECEE] text-xl mt-2">{item.name}</Text>
           </Pressable>
         )}
       />
@@ -143,7 +146,25 @@ const ArtistSelection = () => {
         </Pressable>
       </View>
     </SafeAreaView>
+    </PrimaryGradient>
   );
 };
 
 export default ArtistSelection;
+
+
+
+const styles = StyleSheet.create({
+  gradientContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%", // Full-screen gradient
+  },
+  text: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});
