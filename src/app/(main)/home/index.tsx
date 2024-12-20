@@ -12,6 +12,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  interpolate,
 } from "react-native-reanimated";
 import { BlurView } from "expo-blur";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
@@ -58,11 +59,97 @@ export default function TinderScreen() {
   console.log("Current profile index:", profileIndex);
   console.log("Current profile:", profiles[profileIndex]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  // const animatedStyle = useAnimatedStyle(() => ({
+  //   transform: [
+  //     { translateX: translateX.value }, // Horizontal animation
+  //     { translateY: translateY.value }, // Vertical animation
+  //   ],
+  // }));
+  const animatedStyle = useAnimatedStyle(() => {
+    const rotation = interpolate(
+      translateX.value,
+      [-screenWidth / 2, 0, screenWidth / 2],
+      [-15, 0, 15]
+    );
+
+    const opacity = interpolate(
+      Math.abs(translateX.value),
+      [0, screenWidth / 3],
+      [1, 0.5] // Reduce opacity as card moves away
+    );
+
+    return {
+      transform: [
+        { translateX: translateX.value },
+        { translateY: translateY.value },
+        { rotate: `${rotation}deg` },
+      ],
+      opacity, // Apply interpolated opacity
+    };
+  });
+
+  const labelStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      translateX.value,
+      [-screenWidth / 3, 0, screenWidth / 3],
+      [1, 0, 1]
+    );
+    const scale = interpolate(
+      translateX.value,
+      [-screenWidth / 3, 0, screenWidth / 3],
+      [1.2, 1, 1.2]
+    );
+
+    return {
+      opacity: Math.max(0, opacity), // Ensure opacity is non-negative
+      transform: [{ scale }],
+    };
+  });
+
+  const likeStyle = useAnimatedStyle(() => ({
+    zIndex: 10,
+    position: "absolute",
+    top: 40,
+    left: 20,
+    transform: [{ rotate: "-15deg" }],
+    opacity:
+      translateX.value > 0
+        ? interpolate(translateX.value, [0, screenWidth / 3], [0, 1])
+        : 0,
+    color: "#77FF00",
+  }));
+
+  const passStyle = useAnimatedStyle(() => ({
+    zIndex: 10,
+    position: "absolute",
+    top: 40,
+    right: 20,
+    transform: [{ rotate: "15deg" }],
+    opacity:
+      translateX.value < 0
+        ? interpolate(translateX.value, [-screenWidth / 3, 0], [1, 0])
+        : 0,
+    color: "#FF0000",
+  }));
+
+  const bingedStyle = useAnimatedStyle(() => ({
+    zIndex: 10,
+    position: "absolute",
+    bottom: 40,
+    alignSelf: "center",
+    opacity:
+      translateY.value < -100
+        ? interpolate(translateY.value, [-screenHeight / 3, -100], [1, 0])
+        : 0,
     transform: [
-      { translateX: translateX.value }, // Horizontal animation
-      { translateY: translateY.value }, // Vertical animation
+      {
+        scale:
+          translateY.value < -100
+            ? interpolate(translateY.value, [-screenHeight / 3, -100], [1.2, 1])
+            : 1,
+      },
     ],
+    color: "#FFEE00",
   }));
 
   const onHandlerStateChange = (event) => {
@@ -170,9 +257,44 @@ export default function TinderScreen() {
           onHandlerStateChange={onHandlerStateChange} // Handles state changes
         >
           <Animated.View
-            className="relative bg-white rounded-lg shadow-md justify-center items-center"
+            className="relative  rounded-lg shadow-md justify-center items-center"
             style={[animatedStyle, { width: cardWidth, height: cardHeight }]}
           >
+            {/* Like Label */}
+            <Animated.Text
+              style={[
+                likeStyle,
+                {
+                  fontSize: 60,
+                  fontWeight: "bold",
+                },
+              ]}
+            >
+              LIKE
+            </Animated.Text>
+            {/* Pass Label */}
+            <Animated.Text
+              style={[
+                passStyle,
+                {
+                  fontSize: 60,
+                  fontWeight: "bold",
+                },
+              ]}
+            >
+              PASS
+            </Animated.Text>
+            <Animated.Text
+              style={[
+                bingedStyle,
+                {
+                  fontSize: 60,
+                  fontWeight: "bold",
+                },
+              ]}
+            >
+              BINGED
+            </Animated.Text>
             <Pressable
               onPress={() => {
                 console.log("Profile card pressed");
@@ -202,13 +324,13 @@ export default function TinderScreen() {
             <FontAwesome name="times" size={30} color="white" />
           </Pressable>
           <Pressable
-            onPress={() => handleSwipe("right")}
+            onPress={() => handleSwipe("up")}
             className="p-4  rounded-full"
           >
             <FontAwesome name="star" size={30} color="white" />
           </Pressable>
           <Pressable
-            onPress={() => handleSwipe("up")}
+            onPress={() => handleSwipe("right")}
             className="p-4  rounded-full"
           >
             <FontAwesome name="heart" size={30} color="white" />
