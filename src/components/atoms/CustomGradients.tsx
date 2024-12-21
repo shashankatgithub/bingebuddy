@@ -1,5 +1,6 @@
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { gradients } from '@/src/styles';
 
 /**
  * Reusable Gradient Components
@@ -7,12 +8,12 @@ import { LinearGradient } from 'expo-linear-gradient';
  * Examples: Buttons, Text, Input fields, Icons.
  */
 
-// YouTube Gradient
+// Red Gradient
 export const YouTubeGradient = ({ style, children }) => (
   <LinearGradient
-    colors={['#e52d27', '#b31217']} // Gradient colors
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 0 }} // Horizontal gradient
+    colors={gradients.redGradient.colors}
+    start={gradients.redGradient.start}
+    end={gradients.redGradient.end}
     style={style}
   >
     {children}

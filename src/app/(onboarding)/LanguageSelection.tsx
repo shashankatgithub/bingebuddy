@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -148,7 +148,6 @@ const LanguageSelection = () => {
   );
 };
 
-export default LanguageSelection;
 const styles = StyleSheet.create({
   gradientContainer: {
     flex: 1,
@@ -163,3 +162,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+export default LanguageSelection; 

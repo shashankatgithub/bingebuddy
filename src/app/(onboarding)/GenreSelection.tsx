@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -57,7 +57,7 @@ const GenreSelection = () => {
       doneScale.value = withSpring(1);
     });
     console.log("Selected Movie Genre IDs:", selectedGenres);
-    router.navigate("ArtistSelection");
+    router.navigate("/ArtistSelection");
   };
 
   return (
@@ -146,8 +146,6 @@ const GenreSelection = () => {
   );
 };
 
-export default GenreSelection;
-
 
 const styles = StyleSheet.create({
   gradientContainer: {
@@ -163,3 +161,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+
+export default GenreSelection;

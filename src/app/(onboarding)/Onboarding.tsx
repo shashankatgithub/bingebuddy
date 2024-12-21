@@ -1,12 +1,13 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { Link, router } from "expo-router";
+import { View, Text, Pressable } from "react-native";
+import { router } from "expo-router";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PrimaryGradient } from "@/src/components/atoms/CustomGradients";
+import { globalStyles } from "@/src/styles";
 
 const Onboarding = () => {
   return (
-    <PrimaryGradient style={styles.gradientContainer}>
+    <PrimaryGradient style={globalStyles.gradientContainer}>
       <SafeAreaView className="flex-1 justify-center items-center">
         <Text className="text-6xl justify-center font-bold text-white">
           Binge Buddy
@@ -24,18 +25,3 @@ const Onboarding = () => {
 };
 
 export default Onboarding;
-
-const styles = StyleSheet.create({
-  gradientContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "100%", // Full-screen gradient
-  },
-  text: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-});
