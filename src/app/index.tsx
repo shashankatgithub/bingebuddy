@@ -8,7 +8,7 @@ import BottomTabNavigator from "@/src/navigation/BottomTabNavigator";
 import HomeScreen from "@/src/app/(main)/home/HomeScreen";
 import SearchScreen from "@/src/app/(main)/search/SearchScreen";
 import ProfileScreen from "./(main)/profile/ProfileScreen";
-import FilterScreen from "./(main)/filter/FilterScreen";
+import FilterScreen from "@/src/app/(main)/filter/FilterScreen";
 
 const storage = new MMKV();
 

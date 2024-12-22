@@ -21,11 +21,11 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({ screens }) => {
   return (
     <Tab.Navigator
+      initialRouteName={"Home"} // This can be passed as a prop
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           const screen = screens.find((screen) => screen.name === route.name);
           const iconName = screen ? screen.icon : "help";
-
           return <Ionicons name={iconName} size="30" color={color}/>;
         },
         tabBarActiveTintColor: "#ff0000",
