@@ -8,7 +8,7 @@ interface UserState {
 
   const initialState: UserState = {
     token: "",
-    isFirstLaunch: true,
+    isFirstLaunch: false,
     isLogin: true,
   };
 
@@ -17,8 +17,8 @@ const userSlice = createSlice({
     name: 'user',
     initialState: {
         token: "",
-        isFirstLaunch: true,
-        isLogin: false
+        isFirstLaunch: false,
+        isLogin: true
     },
     reducers: {
         setToken: (state, action: PayloadAction<string>) => {

@@ -11,7 +11,7 @@ const globalStyles = StyleSheet.create({
   actionButtonStyle: {
     position: "absolute",
     paddingHorizontal: 64,
-    bottom: 16*4, // bottom-1
+    bottom: 16 * 4, // bottom-1
     width: "100%", // w-full
     flexDirection: "row",
     justifyContent: "space-between", // justify-between
@@ -26,11 +26,9 @@ const globalStyles = StyleSheet.create({
     justifyContent: "space-between", // justify-between
     alignItems: "center", // items-center
   },
-  horizontalSeparator: {
-    height: 1, // Thickness of the line
-    backgroundColor: "lightgray", // Color of the line
-    width: "100%", // Full-width line
-    marginBottom: 8, // Space between the separator and the navigation bar
+  bottomTabBarStyle: {
+    justifyContent: "space-between", // justify-between
+    alignItems: "center", // items-center
   },
   text: {
     color: "white",

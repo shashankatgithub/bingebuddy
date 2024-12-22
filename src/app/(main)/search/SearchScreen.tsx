@@ -1,15 +1,15 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
-const Profile = () => {
+const SearchScreen = () => {
   return (
     <SafeAreaProvider className='flex-1 justify-center items-center'>
     <View className='flex-1 justify-center items-center'>
-      <Text className='text-6xl font-bold'>Profile</Text>
+      <Text className='text-6xl font-bold'>Search</Text>
     </View>
     </SafeAreaProvider>
   )
 }
 
-export default Profile
+export default SearchScreen

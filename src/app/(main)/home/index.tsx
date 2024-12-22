@@ -17,7 +17,7 @@ import Animated, {
 import { BlurView } from "expo-blur";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { PanGestureHandler } from "react-native-gesture-handler";
-import NavigationBar from "../navigation"; // Import the reusable navigation bar
+import NavigationBar from "../../../navigation"; // Import the reusable navigation bar
 import { State } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 
