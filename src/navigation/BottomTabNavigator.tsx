@@ -1,9 +1,9 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from 'expo-blur';
-import StyleSheet, { Dimensions } from 'react-native';
-
+import { BlurView } from "expo-blur";
+import { StyleSheet, Dimensions } from "react-native";
+import { Easing } from "react-native-reanimated";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,20 +26,30 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({ screens }) => {
         tabBarIcon: ({ focused, color, size }) => {
           const screen = screens.find((screen) => screen.name === route.name);
           const iconName = screen ? screen.icon : "help";
-          return <Ionicons name={iconName} size="30" color={color}/>;
+          return <Ionicons name={iconName} size={28} color={color} />;
         },
         tabBarActiveTintColor: "#ff0000",
         tabBarInactiveTintColor: "white",
         headerShown: false,
         lazy: false,
-        animation:"shift",
         tabBarShowLabel: false,
+        transitionSpec: {
+          animation: "timing",
+          config: {
+            duration: 200,
+            easing: Easing.inOut(Easing.ease),
+          },
+        },
         tabBarBackground: () => (
-          <BlurView tint="light" intensity={100} style={StyleSheet.absoluteFill} />
+          <BlurView
+            tint="light"
+            intensity={30}
+            style={StyleSheet.absoluteFill}
+          />
         ),
         tabBarStyle: {
           position: "absolute",
-          height: screenHeight * 0.08,
+          height: screenHeight * 0.07,
           justifyContent: "center",
           alignItems: "center",
           paddingBottom: screenHeight * 0.02,

@@ -1,39 +1,41 @@
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
+import CardDetailsModal from "../organisms/CardDetailsModal";
 
 import Animated, {
   SharedValue,
   interpolate,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
 } from "react-native-reanimated";
+import { useTapGesture, usePanGesture } from "../molecules/Gestures";
 
 const screenWidth = Dimensions.get("screen").width;
+
 export const imageCardWidth = screenWidth * 0.9;
 
 type ImageCard = {
   user: {
     image: string;
     name: string;
+    genre: Array<string>;
+    year: number;
+    description: string;
+    rating: number;
+    duration: string;
+    watchOptions: Array<string>;
   };
   numOfCards: number;
   index: number;
   activeIndex: SharedValue<number>;
-  onResponse: (a: boolean) => void;
 };
 
-const ImageCard = ({
-  user,
-  numOfCards,
-  index,
-  activeIndex,
-  onResponse,
-}: ImageCard) => {
+const ImageCard = ({ user, numOfCards, index, activeIndex }: ImageCard) => {
   const translationX = useSharedValue(0);
+  const translationY = useSharedValue(0);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const animatedCard = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -56,6 +58,7 @@ const ImageCard = ({
           [-32, 0, 0]
         ),
       },
+      { translateY: translationY.value },
       {
         translateX: translationX.value,
       },
@@ -69,31 +72,35 @@ const ImageCard = ({
     ],
   }));
 
-  const gesture = Gesture.Pan()
-    .onChange((event) => {
-      translationX.value = event.translationX;
+  const handleSwipeRight = () => {
+    console.log("Swiped right");
+  };
 
-      activeIndex.value = interpolate(
-        Math.abs(translationX.value),
-        [0, 500],
-        [index, index + 0.8]
-      );
-    })
-    .onEnd((event) => {
-      if (Math.abs(event.velocityX) > 400) {
-        translationX.value = withSpring(Math.sign(event.velocityX) * screenWidth * 1.5, {
-          velocity: event.velocityX,
-        });
-        activeIndex.value = withSpring(index + 1);
+  const handleSwipeLeft = () => {
+    console.log("Swiped left");
+  };
 
-        runOnJS(onResponse)(event.velocityX > 0);
-      } else {
-        translationX.value = withSpring(0);
-      }
-    });
+  const handleSwipeUp = () => {
+    console.log("Swiped up");
+  };
+
+  const tapGesture = useTapGesture(() => {
+    console.log("Tapped");
+    setModalVisible(true);
+  });
+
+  const panGesture = usePanGesture(
+    translationX,
+    translationY,
+    activeIndex,
+    index,
+    handleSwipeRight,
+    handleSwipeLeft,
+    handleSwipeUp
+  );
 
   return (
-    <GestureDetector gesture={gesture}>
+    <GestureDetector gesture={Gesture.Race(tapGesture, panGesture)}>
       <Animated.View
         style={[
           styles.card,
@@ -107,15 +114,25 @@ const ImageCard = ({
           style={[StyleSheet.absoluteFillObject, styles.image]}
           source={{ uri: user.image }}
         />
-
         <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.8)"]}
+          colors={[
+            "transparent", // Start fully transparent
+            "rgba(0,0,0,0.6)", // Midpoint is semi-transparent black
+            "rgba(0,0,0,1)", // End fully opaque black
+          ]}
           style={[StyleSheet.absoluteFillObject, styles.overlay]}
         />
 
         <View style={styles.footer}>
           <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.genre}>{user.genre.join(", ")}</Text>
+          <Text style={styles.yearAndDuration}>{user.year} , {user.duration}</Text>
         </View>
+        <CardDetailsModal
+          isVisible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          user={user}
+        />
       </Animated.View>
     </GestureDetector>
   );
@@ -153,7 +170,22 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   name: {
-    fontSize: 24,
+    padding: 5,
+    fontWeight: "bold",
+    fontVariant: ["small-caps"],
+    fontSize: 30,
+    color: "white",
+    fontFamily: "InterBold",
+  },
+  genre: {
+    padding: 5,
+    fontSize: 20,
+    color: "white",
+    fontFamily: "InterBold",
+  },
+  yearAndDuration: {
+    padding: 5,
+    fontSize: 20,
     color: "white",
     fontFamily: "InterBold",
   },
