@@ -1,0 +1,81 @@
+import React, { useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from "react-native-reanimated";
+
+const DynamicGestureExample = () => {
+  const [isGestureActive, setIsGestureActive] = useState(false);
+  const translationX = useSharedValue(0);
+
+  // Pan Gesture
+  const panGesture = Gesture.Pan()
+    .onChange((event) => {
+      translationX.value = event.translationX;
+    })
+    .onEnd(() => {
+      translationX.value = withSpring(0); // Reset position
+    });
+
+  // Tap Gesture to Toggle Gesture Activation
+  const tapGesture = Gesture.Tap().onEnd(() => {
+    runOnJS(setIsGestureActive)((prev) => !prev);
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translationX.value }],
+  }));
+  const noopGesture = Gesture.Tap(); // No-op fallback gesture
+
+
+  return (
+    <View style={styles.container}>
+      <GestureDetector gesture={tapGesture}>
+        <View style={styles.toggleButton}>
+          <Text style={styles.toggleText}>
+            {isGestureActive ? "Disable Gesture" : "Enable Gesture"}
+          </Text>
+        </View>
+      </GestureDetector>
+
+      <GestureDetector gesture={isGestureActive ? panGesture : noopGesture}>
+        <Animated.View style={[styles.box, animatedStyle]}>
+          <Text style={styles.boxText}>
+            {isGestureActive ? "Pan Me" : "Gesture Disabled"}
+          </Text>
+        </Animated.View>
+      </GestureDetector>
+    </View>
+  );
+};
+
+export default DynamicGestureExample;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  toggleButton: {
+    padding: 20,
+    backgroundColor: "#007BFF",
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  toggleText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  box: {
+    width: 150,
+    height: 150,
+    backgroundColor: "#FFD700",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+  },
+  boxText: {
+    fontWeight: "bold",
+    color: "#000",
+  },
+});
