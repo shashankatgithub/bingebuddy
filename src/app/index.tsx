@@ -26,16 +26,18 @@ const RootNavigation = () => {
   }, []);
   if (user.isFirstLaunch) {
     return <Redirect href={"/(onboarding)/Onboarding"} />;
-  } else if (user.isLogin) {
+  } else {
     return (
       <>
         <Stack screenOptions={{ headerShown: false }} />
         <BottomTabNavigator screens={screens} />
       </>
     );
-  } else {
-    return <Redirect href={"/(auth)"} />;
   }
+  // else {
+  //   //console.log("user", user);
+  //   return <Redirect href={"/(auth)"} />;
+  // }
 };
 
 export default RootNavigation;

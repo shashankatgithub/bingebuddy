@@ -10,22 +10,34 @@ import {
 import RatingStars from "../atoms/RatingStars";
 
 const screenWidth = Dimensions.get("window").width;
+type Movie = {
+  id: string; // Unique identifier for the movie
+  title: string; // Name of the movie
+  poster_path: string; // Path to the movie's backdrop image
+  genre_ids: string[]; // List of genre IDs associated with the movie
+  release_date: string; // Release date of the movie
+  overview: string; // Brief description of the movie
+  vote_average: number; // Average rating of the movie
+  vote_count: number; // Number of votes the movie has received
+  backdrop_path: string; // Path to the movie's backdrop image
+  runtime: number; // Duration of the movie in minutes
+}
 
-type User = {
-  image: string;
-  name: string;
-  genre: Array<string>;
-  year: number;
-  description: string;
-  rating: number;
-  duration: string;
-  watchOptions: Array<string>;
-};
+// type User = {
+//   image: string;
+//   name: string;
+//   genre: Array<string>;
+//   year: number;
+//   description: string;
+//   rating: number;
+//   duration: string;
+//   watchOptions: Array<string>;
+// };
 
 type CardDetailsModalProps = {
   isVisible: boolean; // Change from `SharedValue<boolean>` to `boolean`
   onClose: () => void; // Callback to close the modal
-  user: User;
+  movie: Movie;
 };
 const convertToFivePointScale = (rating: number): number => {
   const scaledRating = (rating / 10) * 5;
@@ -35,7 +47,7 @@ const convertToFivePointScale = (rating: number): number => {
 const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
   isVisible,
   onClose,
-  user,
+  movie,
 }) => {
   return (
     <Modal
@@ -49,17 +61,17 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
           <Pressable style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>✕</Text>
           </Pressable>
-          <Text style={styles.userName}>{user.name}</Text>
-          <Text style={styles.userDescription}>{user.description}</Text>{}
-          <RatingStars rating={convertToFivePointScale(user.rating)} />
-          <Text style={styles.userDetails}>Duration: {user.duration}</Text>
+          <Text style={styles.userName}>{movie.title}</Text>
+          <Text style={styles.userDescription}>{movie.overview}</Text>{}
+          <RatingStars rating={convertToFivePointScale(movie.vote_average)} />
+          <Text style={styles.userDetails}>Duration: {movie.runtime}</Text>
           <Text style={styles.watchOptionsTitle}>Watch Options:</Text>
-          {user.watchOptions &&
+          {/* {user.watchOptions &&
             user.watchOptions.map((option, index) => (
               <Text key={index} style={styles.watchOption}>
                 • {option}
               </Text>
-            ))}
+            ))} */}
         </View>
       </View>
     </Modal>

@@ -3,14 +3,21 @@ import { saveToMMKV, getFromMMKV } from "../utils/mmkv";
 import { StorageKeys } from "../utils/StorageKeys";
 
 interface Movie {
-  movieId: string; // Unique identifier for the movie
-  movieName: string; // Name of the movie
+  id: string; // Unique identifier for the movie
+  title: string; // Name of the movie
+  poster_path: string; // Path to the movie's backdrop image
+  genre_ids: string[]; // List of genre IDs associated with the movie
+  release_date: string; // Release date of the movie
+  overview: string; // Brief description of the movie
+  vote_average: number; // Average rating of the movie
+  vote_count: number; // Number of votes the movie has received
   backdrop_path: string; // Path to the movie's backdrop image
+  runtime: number; // Duration of the movie in minutes
 }
 
 interface Artist {
-  id: string;          // Unique identifier for the artist
-  name: string;        // Name of the artist
+  id: string; // Unique identifier for the artist
+  name: string; // Name of the artist
   profile_path: string; // Path to the artist's profile image
 }
 
@@ -19,6 +26,8 @@ interface UserState {
   isFirstLaunch: boolean;
   isLoggedIn: boolean;
   languages: string[];
+  currentCards: Movie[];
+  nextCards: Movie[];
   genres: Record<string, string>;
   artists: Record<string, Artist>;
   watchlist: Record<string, Movie[]>;
@@ -30,6 +39,8 @@ const initialState: UserState = {
   token: "",
   isFirstLaunch: true,
   isLoggedIn: false,
+  currentCards: getFromMMKV(StorageKeys.CURRENT_CARDS) || [],
+  nextCards: getFromMMKV(StorageKeys.NEXT_CARDS) || [],
   genres: getFromMMKV(StorageKeys.GENRES) || [],
   languages: getFromMMKV(StorageKeys.LANGUAGES) || [],
   artists: getFromMMKV(StorageKeys.ARTISTS) || [],
@@ -102,12 +113,12 @@ const userSlice = createSlice({
     },
     removeFromWatchlist(
       state,
-      action: PayloadAction<{ category: string; movieId: string }>
+      action: PayloadAction<{ category: string; id: string }>
     ) {
-      const { category, movieId } = action.payload;
+      const { category, id } = action.payload;
       if (state.watchlist[category]) {
         state.watchlist[category] = state.watchlist[category].filter(
-          (movie) => movie.movieId !== movieId
+          (movie) => movie.id !== id
         );
         if (state.watchlist[category].length === 0) {
           delete state.watchlist[category];
@@ -118,16 +129,12 @@ const userSlice = createSlice({
       state.likes = action.payload;
     },
     addToLikes(state, action: PayloadAction<Movie>) {
-      if (
-        !state.likes.some((movie) => movie.movieId === action.payload.movieId)
-      ) {
+      if (!state.likes.some((movie) => movie.id === action.payload.id)) {
         state.likes.push(action.payload);
       }
     },
     removeFromLikes(state, action: PayloadAction<string>) {
-      state.likes = state.likes.filter(
-        (movie) => movie.movieId !== action.payload
-      );
+      state.likes = state.likes.filter((movie) => movie.id !== action.payload);
     },
 
     // Dislikes
@@ -135,18 +142,23 @@ const userSlice = createSlice({
       state.dislikes = action.payload;
     },
     addToDislikes(state, action: PayloadAction<Movie>) {
-      if (
-        !state.dislikes.some(
-          (movie) => movie.movieId === action.payload.movieId
-        )
-      ) {
+      if (!state.dislikes.some((movie) => movie.id === action.payload.id)) {
         state.dislikes.push(action.payload);
       }
     },
     removeFromDislikes(state, action: PayloadAction<string>) {
       state.dislikes = state.dislikes.filter(
-        (movie) => movie.movieId !== action.payload
+        (movie) => movie.id !== action.payload
       );
+    },
+    setCurrentCards(state, action: PayloadAction<Movie[]>) {
+      state.currentCards = action.payload;
+      saveToMMKV(StorageKeys.CURRENT_CARDS, state.currentCards);
+    },
+
+    setNextCards(state, action: PayloadAction<Movie[]>) {
+      state.nextCards = action.payload;
+      saveToMMKV(StorageKeys.NEXT_CARDS, state.nextCards);
     },
   },
 });
@@ -173,5 +185,7 @@ export const {
   setDislikes,
   addToDislikes,
   removeFromDislikes,
+  setCurrentCards,
+  setNextCards,
 } = userSlice.actions;
 export default userSlice.reducer;

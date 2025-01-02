@@ -8,5 +8,7 @@ export const StorageKeys = {
     LIKES: "likes",
     DISLIKES: "dislikes",
     APP_THEME: "appTheme",
+    CURRENT_CARDS: "currentCards",
+    NEXT_CARDS: "nextCards",
   };
   

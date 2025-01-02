@@ -1,6 +1,5 @@
-// src/services/bingeServiceApi.js
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_CONFIG } from '@/src/constants/Configuration';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { API_CONFIG } from "@/src/constants/Configuration";
 
 export const bingeServiceApi = createApi({
   reducerPath: "bingeServiceApi",
@@ -31,13 +30,45 @@ export const bingeServiceApi = createApi({
 
         try {
           const result = await queryFulfilled;
-          console.log("Response from /top-actors:", result.data);
+          //console.log("Response from /top-actors:", result.data);
         } catch (error) {
           console.error("Error from /top-actors:", error);
+        }
+      },
+    }),
+    discoverMovies: builder.query({
+      query: ({ genres, languages, artists, page = 1, release_date }) => ({
+        url: "/discover-movies",
+        params: {
+          genres: genres.join(","), // Comma-separated genres
+          languages: languages.join(","), // Comma-separated languages
+          artists: artists.join(","), // Comma-separated artists
+          page, // Optional page number
+          release_date, // Optional release date
+        },
+      }),
+      async onQueryStarted(
+        { genres, languages, artists, page, release_date },
+        { queryFulfilled }
+      ) {
+        // Log the request being made
+        console.log("Request to /discover-movies:");
+        console.log("Genres:", genres);
+        console.log("Languages:", languages);
+        console.log("Artists:", artists);
+        console.log("Page:", page);
+        console.log("Release Date:", release_date);
+
+        try {
+          const result = await queryFulfilled;
+          console.log("Response from /discover-movies:", result.data);
+        } catch (error) {
+          console.error("Error from /discover-movies:", error);
         }
       },
     }),
   }),
 });
 
-export const { useLazyGetActorsQuery } = bingeServiceApi;
+export const { useLazyGetActorsQuery, useLazyDiscoverMoviesQuery } =
+  bingeServiceApi;

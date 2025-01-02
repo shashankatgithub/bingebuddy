@@ -13,38 +13,15 @@ import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import imagePath from "@/src/constants/imagePath";
 import { PrimaryGradient } from "@/src/components/atoms/CustomGradients";
-import { getFromMMKV } from "@/src/utils/mmkv";
 import { useSelector } from "react-redux";
-import { IMAGE_BASE_URL } from "@/src/constants/Configuration";
+import { ARTIST_IMAGE_BASE_URL } from "@/src/constants/Configuration";
 import { Image } from "expo-image";
-// const artists = [
-//   { id: 1, name: "Eminem", image: imagePath.artist_img },
-//   { id: 2, name: "Drake", image: imagePath.artist_img },
-//   { id: 3, name: "Kanye West", image: imagePath.artist_img },
-//   { id: 4, name: "Post Malone", image: imagePath.artist_img },
-//   { id: 5, name: "Travis Scott", image: imagePath.artist_img },
-//   { id: 6, name: "Kendrick Lamar", image: imagePath.artist_img },
-//   { id: 7, name: "Mac Miller", image: imagePath.artist_img },
-//   { id: 8, name: "J. Cole", image: imagePath.artist_img },
-//   { id: 9, name: "Childish Gambino", image: imagePath.artist_img },
-//   { id: 10, name: "Logic", image: imagePath.artist_img },
-//   { id: 11, name: "Lil Wayne", image: imagePath.artist_img },
-//   { id: 12, name: "Nicki Minaj", image: imagePath.artist_img },
-//   { id: 13, name: "Cardi B", image: imagePath.artist_img },
-//   { id: 14, name: "Tyler, The Creator", image: imagePath.artist_img },
-//   { id: 15, name: "Juice WRLD", image: imagePath.artist_img },
-//   { id: 16, name: "XXXTentacion", image: imagePath.artist_img },
-//   { id: 17, name: "Lil Uzi Vert", image: imagePath.artist_img },
-//   { id: 18, name: "A$AP Rocky", image: imagePath.artist_img },
-//   { id: 19, name: "Future", image: imagePath.artist_img },
-//   { id: 20, name: "Jay-Z", image: imagePath.artist_img },
-// ];
+import { StorageKeys } from "@/src/utils/StorageKeys";
+import { saveToMMKV } from "@/src/utils/mmkv";
 
-// Get artists data from Redux store
 
 const ArtistSelection = () => {
   const blurhash = "L87KC-NG01?Ge-fkbbf50gt6~AIo";
-  const languages = getFromMMKV("selectedLanguages");
   const [selectedArtists, setSelectedArtists] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const doneScale = useSharedValue(1);
@@ -52,12 +29,12 @@ const ArtistSelection = () => {
   const artists = useSelector((state: any) => state.user.artists);
 
   const getDisplayName = (name) => {
-    if (name.length > 15) {
+    if (name.length > 10) {
       const nameParts = name.split(" ");
       if (nameParts.length > 1) {
         const fullName = `${nameParts[0]} ${nameParts[1]}`;
         if (fullName.length > 10) {
-          return nameParts[0]; // Only first name if combined length > 10
+          return nameParts[0] + " " + nameParts[1][0]; // Only first name if combined length > 10
         }
         return fullName;
       }
@@ -67,7 +44,6 @@ const ArtistSelection = () => {
   };
 
   const toggleSelection = (id: number) => {
-    console.log("languages selected", languages);
     if (selectedArtists.includes(id)) {
       setSelectedArtists(selectedArtists.filter((artistId) => artistId !== id));
     } else {
@@ -84,6 +60,7 @@ const ArtistSelection = () => {
       doneScale.value = withSpring(1);
     });
     console.log("Selected Artist IDs:", selectedArtists);
+    saveToMMKV(StorageKeys.ARTISTS, selectedArtists);
     router.navigate("/SignUp");
   };
 
@@ -113,7 +90,7 @@ const ArtistSelection = () => {
           keyExtractor={(item) => item.id.toString()}
           numColumns={3}
           columnWrapperStyle={{
-            justifyContent: "space-evenly",
+            justifyContent: "space-between",
             paddingHorizontal: 1,
           }}
           contentContainerStyle={{ paddingBottom: 80 }}
@@ -131,7 +108,7 @@ const ArtistSelection = () => {
                   typeof item.profile_path === "string" &&
                   item.profile_path.trim() !== ""
                     ? {
-                        uri: `${IMAGE_BASE_URL}${item.profile_path}`,
+                        uri: `${ARTIST_IMAGE_BASE_URL}${item.profile_path}`,
                         method: "POST",
                         headers: {
                           Pragma: "no-cache",

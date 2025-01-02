@@ -101,8 +101,8 @@ const GenreSelection = () => {
           keyExtractor={(item) => item.id.toString()}
           numColumns={3}
           columnWrapperStyle={{
-            justifyContent: "space-evenly",
-            paddingHorizontal: 1,
+            justifyContent: "space-between",
+            paddingHorizontal: 30,
           }}
           contentContainerStyle={{ paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}

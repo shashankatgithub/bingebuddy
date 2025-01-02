@@ -11,28 +11,29 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { useTapGesture, usePanGesture } from "../molecules/Gestures";
+import { MOVIE_IMAGE_BASE_URL } from "@/src/constants/Configuration";
 
 const screenWidth = Dimensions.get("screen").width;
 
 export const imageCardWidth = screenWidth * 0.9;
 
 type ImageCard = {
-  user: {
-    image: string;
-    name: string;
-    genre: Array<string>;
-    year: number;
-    description: string;
-    rating: number;
-    duration: string;
-    watchOptions: Array<string>;
+  movie: {
+    poster_path: string;
+    title: string;
+    genre_ids: string[];
+    release_date: string;
+    overview: string;
+    vote_average: number;
+    runtime: string;
+    //watchOptions: Array<string>;
   };
   numOfCards: number;
   index: number;
   activeIndex: SharedValue<number>;
 };
 
-const ImageCard = ({ user, numOfCards, index, activeIndex }: ImageCard) => {
+const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCard) => {
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -112,7 +113,17 @@ const ImageCard = ({ user, numOfCards, index, activeIndex }: ImageCard) => {
       >
         <Image
           style={[StyleSheet.absoluteFillObject, styles.image]}
-          source={{ uri: user.image }}
+          source={{ 
+            uri: `${MOVIE_IMAGE_BASE_URL}${movie.poster_path}`,
+                        method: "POST",
+                        headers: {
+                          Pragma: "no-cache",
+                        },
+                        body: "Your Body goes here",
+                      
+            
+            //uri: movie.poster_path 
+          }}
         />
         <LinearGradient
           colors={[
@@ -124,14 +135,14 @@ const ImageCard = ({ user, numOfCards, index, activeIndex }: ImageCard) => {
         />
 
         <View style={styles.footer}>
-          <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.genre}>{user.genre.join(", ")}</Text>
-          <Text style={styles.yearAndDuration}>{user.year} , {user.duration}</Text>
+          <Text style={styles.name}>{movie.title}</Text>
+          <Text style={styles.genre}>{movie.genre_ids}</Text>
+          <Text style={styles.yearAndDuration}>{movie.release_date} , {movie.runtime}</Text>
         </View>
         <CardDetailsModal
           isVisible={modalVisible}
           onClose={() => setModalVisible(false)}
-          user={user}
+          movie={movie}
         />
       </Animated.View>
     </GestureDetector>
