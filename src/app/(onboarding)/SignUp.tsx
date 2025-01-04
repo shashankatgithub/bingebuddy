@@ -17,14 +17,15 @@ import {
   setCurrentCards,
 } from "@/src/state/userSlice";
 import { Image } from "expo-image";
-import { useLazyDiscoverMoviesQuery } from "@/src/api/bingeService";
+import { useLazyDiscoverMoviesQuery, useLazyNewDiscoverMoviesQuery } from "@/src/api/bingeService";
 import { StorageKeys } from "@/src/utils/StorageKeys";
 import { getFromMMKV } from "@/src/utils/mmkv";
 
 const SignUp = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [discoverMovies, { isFetching }] = useLazyDiscoverMoviesQuery();
+  //const [discoverMovies, { isFetching }] = useLazyDiscoverMoviesQuery();
+  const [discoverMovies, { isFetching }] = useLazyNewDiscoverMoviesQuery();
 
   const handleDonePress = () => {
     router.navigate("/SignIn");
@@ -40,14 +41,22 @@ const SignUp = () => {
     const languages = getFromMMKV(StorageKeys.LANGUAGES) || [];
     const artists = getFromMMKV(StorageKeys.ARTISTS) || [];
 
-    try {
-      const result = await discoverMovies({
-        genres,
-        languages,
-        artists,
-        page: 1, // Default page
-      }).unwrap();
+    const params: Record<string, string[] | number> = {
+      genres,
+      languages,
+      artists,
+      page: 1,
+    };
 
+    
+    try {
+      // const result = await discoverMovies({
+      //   genres,
+      //   languages,
+      //   artists,
+      //   page: 1,
+      // }).unwrap();
+      const result = await discoverMovies(params).unwrap();
       console.log("Discover movies response:", result);
 
       dispatch(setCurrentCards(result || []));

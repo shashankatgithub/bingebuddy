@@ -1,43 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { saveToMMKV, getFromMMKV } from "../utils/mmkv";
 import { StorageKeys } from "../utils/StorageKeys";
-
-interface Movie {
-  id: string; // Unique identifier for the movie
-  title: string; // Name of the movie
-  poster_path: string; // Path to the movie's backdrop image
-  genre_ids: string[]; // List of genre IDs associated with the movie
-  release_date: string; // Release date of the movie
-  overview: string; // Brief description of the movie
-  vote_average: number; // Average rating of the movie
-  vote_count: number; // Number of votes the movie has received
-  backdrop_path: string; // Path to the movie's backdrop image
-  runtime: number; // Duration of the movie in minutes
-}
-
-interface Artist {
-  id: string; // Unique identifier for the artist
-  name: string; // Name of the artist
-  profile_path: string; // Path to the artist's profile image
-}
-
-interface UserState {
-  token: string;
-  isFirstLaunch: boolean;
-  isLoggedIn: boolean;
-  languages: string[];
-  currentCards: Movie[];
-  nextCards: Movie[];
-  genres: Record<string, string>;
-  artists: Record<string, Artist>;
-  watchlist: Record<string, Movie[]>;
-  likes: Movie[];
-  dislikes: Movie[];
-}
+import { Artist, Movie, UserState } from "../components/atoms/types";
 
 const initialState: UserState = {
   token: "",
-  isFirstLaunch: true,
+  isFirstLaunch: false,
   isLoggedIn: false,
   currentCards: getFromMMKV(StorageKeys.CURRENT_CARDS) || [],
   nextCards: getFromMMKV(StorageKeys.NEXT_CARDS) || [],
@@ -137,7 +105,6 @@ const userSlice = createSlice({
       state.likes = state.likes.filter((movie) => movie.id !== action.payload);
     },
 
-    // Dislikes
     setDislikes(state, action: PayloadAction<Movie[]>) {
       state.dislikes = action.payload;
     },

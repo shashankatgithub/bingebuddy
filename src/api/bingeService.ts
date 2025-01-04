@@ -36,6 +36,29 @@ export const bingeServiceApi = createApi({
         }
       },
     }),
+    newDiscoverMovies: builder.query({
+      query: (params: Record<string, any>) => {
+        const queryParams = {
+          ...params, // Use the params object directly
+          page: params.page || 1, // Ensure page has a default value
+        };
+    
+        return {
+          url: "/discover-movies",
+          params: queryParams, // Send the queryParams as-is
+        };
+      },
+      async onQueryStarted(params, { queryFulfilled }) {
+        console.log("Request to /discover-movies:", params);
+    
+        try {
+          const result = await queryFulfilled;
+          console.log("Response from /discover-movies:", result.data);
+        } catch (error) {
+          console.error("Error from /discover-movies:", error);
+        }
+      },
+    }),
     discoverMovies: builder.query({
       query: ({ genres, languages, artists, page = 1, release_date }) => ({
         url: "/discover-movies",
@@ -67,8 +90,34 @@ export const bingeServiceApi = createApi({
         }
       },
     }),
+    getSearchPageData: builder.query({
+      query: () => ({
+        url: "/search-page",
+      }),
+      async onQueryStarted(_, { queryFulfilled }) {
+        console.log("Request to /search-page");
+
+        try {
+          const result = await queryFulfilled;
+          console.log("Response from /search-page:", result.data);
+        } catch (error) {
+          console.error("Error from /search-page:", error);
+        }
+      },
+    }),
+    search: builder.query({
+      query: ({ query, page }) => ({
+        url: "/search",
+        params: { query, page },
+      }),
+    }),
   }),
 });
 
-export const { useLazyGetActorsQuery, useLazyDiscoverMoviesQuery } =
-  bingeServiceApi;
+export const {
+  useLazyGetActorsQuery,
+  useLazyDiscoverMoviesQuery,
+  useLazyGetSearchPageDataQuery,
+  useLazySearchQuery,
+  useLazyNewDiscoverMoviesQuery
+} = bingeServiceApi;

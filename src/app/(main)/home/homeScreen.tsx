@@ -4,9 +4,7 @@ import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSelector, useDispatch } from "react-redux";
-
-
+import { useSelector } from "react-redux";
 import {
   useAnimatedReaction,
   useSharedValue,
@@ -15,9 +13,23 @@ import {
 import { globalStyles, gradients } from "@/src/styles";
 import ActionButtons from "@/src/components/organisms/ActionButtons";
 
-const HomeScreen = () => {
-  const dispatch = useDispatch();
-  const currentCards = useSelector((state: any) => state.user.currentCards);
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { BottomTabParamList } from "@/src/components/atoms/types";
+
+type HomeScreenProps = BottomTabScreenProps<BottomTabParamList, "Home">;
+
+
+const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
+  const { initialCards = [] } = route.params || {};
+  console.log("Initial Cards:", initialCards);
+  //const dispatch = useDispatch();
+  const reduxCurrentCards = useSelector(
+    (state: any) => state.user.currentCards
+  );
+  //const currentCards = useSelector((state: any) => state.user.currentCards);
+  const currentCards =
+    initialCards && initialCards.length > 0 ? initialCards : reduxCurrentCards;
+
   //const nextCards = useSelector((state: any) => state.user.nextCards);
   const [movies, setMovies] = useState(currentCards);
   const activeIndex = useSharedValue(0);
@@ -32,7 +44,8 @@ const HomeScreen = () => {
     }
   );
   useEffect(() => {
-    console.log("Current Cards:", currentCards);
+    //console.log("Current Cards:", currentCards);
+    setMovies(currentCards);
   }, [currentCards]);
 
   useEffect(() => {
@@ -40,7 +53,10 @@ const HomeScreen = () => {
       //TODO Here equate with last profile index and show some card that suggestion are over.
       console.warn("Last 2 cards remaining. Fetch more!");
       //setMovies((currentCard) => [...currentCard, ...currentCards.reverse()]);
-      setMovies((currentMovies) => [...currentMovies, ...[...currentCards].reverse()]);
+      setMovies((currentMovies) => [
+        ...currentMovies,
+        ...[...currentCards].reverse(),
+      ]);
     }
   }, [index]);
 

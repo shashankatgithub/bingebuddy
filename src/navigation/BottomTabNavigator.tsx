@@ -4,11 +4,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { StyleSheet, Dimensions } from "react-native";
 import { Easing } from "react-native-reanimated";
+import { BottomTabParamList } from "../components/atoms/types";
 
-const Tab = createBottomTabNavigator();
+
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 interface Screen {
-  name: string;
+  name: keyof BottomTabParamList;
   component: React.ComponentType<any>;
   icon: string;
 }

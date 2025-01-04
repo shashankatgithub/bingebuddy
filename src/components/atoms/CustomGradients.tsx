@@ -1,6 +1,6 @@
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { gradients } from '@/src/styles';
+import { globalStyles, gradients } from '@/src/styles';
 
 /**
  * Reusable Gradient Components
@@ -42,4 +42,15 @@ export const SecondaryGradient = ({ style, children }) => (
   >
     {children}
   </LinearGradient>
+);
+
+export const AppGradient = ({ style, children }) => (
+  <LinearGradient
+        colors={gradients.appGradient.colors}
+        start={gradients.appGradient.start}
+        end={gradients.appGradient.end}
+        style={globalStyles.gradientContainer}
+      >
+        {children}
+      </LinearGradient>
 );
