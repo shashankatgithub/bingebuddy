@@ -22,11 +22,9 @@ type HomeScreenProps = BottomTabScreenProps<BottomTabParamList, "Home">;
 const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
   const { initialCards = [] } = route.params || {};
   console.log("Initial Cards:", initialCards);
-  //const dispatch = useDispatch();
   const reduxCurrentCards = useSelector(
     (state: any) => state.user.currentCards
   );
-  //const currentCards = useSelector((state: any) => state.user.currentCards);
   const currentCards =
     initialCards && initialCards.length > 0 ? initialCards : reduxCurrentCards;
 
@@ -44,7 +42,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
     }
   );
   useEffect(() => {
-    //console.log("Current Cards:", currentCards);
     setMovies(currentCards);
   }, [currentCards]);
 
@@ -52,7 +49,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
     if (index > movies.length - 3) {
       //TODO Here equate with last profile index and show some card that suggestion are over.
       console.warn("Last 2 cards remaining. Fetch more!");
-      //setMovies((currentCard) => [...currentCard, ...currentCards.reverse()]);
       setMovies((currentMovies) => [
         ...currentMovies,
         ...[...currentCards].reverse(),
