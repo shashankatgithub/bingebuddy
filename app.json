@@ -8,9 +8,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "assetBundlePatterns": [
-      "src/assets/images/*"
-    ],
+    "assetBundlePatterns": ["src/assets/images/*"],
     "splash": {
       "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
@@ -18,14 +16,26 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.bingebuddy"
+      "bundleIdentifier": "com.anonymous.bingebuddy",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to provide popular movies around you.",
+        "NSLocationAlwaysUsageDescription": "This app uses your location for location-based recommendations.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to use your location.",
+        "UIBackgroundModes": ["fetch"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.bingebuddy"
+      "package": "com.anonymous.bingebuddy",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -33,6 +43,12 @@
       "favicon": "./src/assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",

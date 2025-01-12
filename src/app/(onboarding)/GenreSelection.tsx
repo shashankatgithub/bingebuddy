@@ -12,13 +12,15 @@ import {
 import { useSharedValue, withSpring } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { PrimaryGradient } from "@/src/components/atoms/CustomGradients";
+import {
+  AppGradient,
+  PrimaryGradient,
+} from "@/src/components/atoms/CustomGradients";
 import { SUPPORTED_GENRES } from "@/src/constants/Configuration";
 import { getFromMMKV, saveToMMKV } from "@/src/utils/mmkv";
 import { StorageKeys } from "@/src/utils/StorageKeys";
 import { useDispatch } from "react-redux";
-import userSlice from "@/src/state/userSlice";
-import { setArtists } from "@/src/state/userSlice";
+import { setPerson } from "@/src/state/userSlice";
 import { useLazyGetActorsQuery } from "@/src/api/bingeService";
 
 const movieGenres = SUPPORTED_GENRES;
@@ -55,37 +57,43 @@ const GenreSelection = () => {
       return;
     }
     try {
-      //const genreIds = selectedGenres.join(",");
-      //const languageCodes = languages.join(","); // Use the first selected language
       const artistsData = await fetchActors({
-        genres : selectedGenres,
-        languages,
+        genres: selectedGenres.join("|"),
+        languages: languages.join("|"),
       }).unwrap();
-      dispatch(setArtists(artistsData));
-      //saveToMMKV(StorageKeys.ARTISTS, artistsData);
+      dispatch(setPerson(artistsData));
       router.navigate("/ArtistSelection");
     } catch (error) {
       console.error("Error fetching actors:", error);
     }
   };
 
+  const handleClearQuery = () => {
+    setSearchQuery("");
+  };
+
   return (
-    <PrimaryGradient style={styles.gradientContainer}>
+    <AppGradient style={undefined}>
       <SafeAreaView className="flex-1 ">
         {/* Header */}
-        <View className="px-6 pb-10">
+        <View className="px-4 pb-10 w-full">
           <Text className="text-[#EAECEE]  text-2xl font-bold text-center mb-3">
             Choose 2 or more movie genres of the content you prefer.
           </Text>
           {/* Search Bar */}
-          <View className="mt-1 bg-gray-700 rounded-full flex-row items-center px-4 py-2">
+          <View className="mt-1 bg-gray-700 rounded-full flex-row items-center py-2 w-full">
             <TextInput
               placeholder="Search"
               placeholderTextColor="#EAECEE"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              className="flex-1 text-white py-2 text-lg"
+              className="flex-1 text-white py-2 text-lg px-10"
             />
+            {searchQuery.trim().length > 0 && (
+              <Pressable onPress={handleClearQuery} style={styles.clearButton}>
+                <Text style={styles.clearButtonText}>✕</Text>
+              </Pressable>
+            )}
           </View>
         </View>
 
@@ -96,48 +104,48 @@ const GenreSelection = () => {
             <Text className="text-white mt-2">Loading...</Text>
           </View>
         ) : (
-        <FlatList
-          data={filteredGenres}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={3}
-          columnWrapperStyle={{
-            justifyContent: "space-between",
-            paddingHorizontal: 30,
-          }}
-          contentContainerStyle={{ paddingBottom: 80 }}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <Pressable
-              key={item.id}
-              onPress={() => toggleSelection(item.id)}
-              className="relative items-center mb-6"
-            >
-              {/* Genre Initial */}
-              <View
-                style={[
-                  styles.circleContainer,
-                  selectedGenres.includes(item.id)
-                    ? styles.selectedBorder
-                    : styles.defaultBorder,
-                ]}
+          <FlatList
+            data={filteredGenres}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={3}
+            columnWrapperStyle={{
+              justifyContent: "space-between",
+              paddingHorizontal: 30,
+            }}
+            contentContainerStyle={{ paddingBottom: 80 }}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => (
+              <Pressable
+                key={item.id}
+                onPress={() => toggleSelection(item.id)}
+                className="relative items-center mb-6"
               >
-                <Text className="text-black text-xl font-bold">
-                  {item.name.slice(0, 2).toUpperCase()}
-                </Text>
-              </View>
-
-              {/* Tick Mark */}
-              {selectedGenres.includes(item.id) && (
-                <View className="absolute top-2 right-2 w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center">
-                  <Text className="text-white font-bold text-lg">✓</Text>
+                {/* Genre Initial */}
+                <View
+                  style={[
+                    styles.circleContainer,
+                    selectedGenres.includes(item.id)
+                      ? styles.selectedBorder
+                      : styles.defaultBorder,
+                  ]}
+                >
+                  <Text className="text-black text-xl font-bold">
+                    {item.name.slice(0, 2).toUpperCase()}
+                  </Text>
                 </View>
-              )}
 
-              {/* Genre Name */}
-              <Text className="text-[#EAECEE] text-xl mt-2">{item.name}</Text>
-            </Pressable>
-          )}
-        />
+                {/* Tick Mark */}
+                {selectedGenres.includes(item.id) && (
+                  <View className="absolute top-2 right-2 w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center">
+                    <Text className="text-white font-bold text-lg">✓</Text>
+                  </View>
+                )}
+
+                {/* Genre Name */}
+                <Text className="text-[#EAECEE] text-xl mt-2">{item.name}</Text>
+              </Pressable>
+            )}
+          />
         )}
 
         {/* Navigation Arrows */}
@@ -162,7 +170,7 @@ const GenreSelection = () => {
           </Pressable>
         </View>
       </SafeAreaView>
-    </PrimaryGradient>
+    </AppGradient>
   );
 };
 
@@ -200,6 +208,14 @@ const styles = StyleSheet.create({
   defaultBorder: {
     borderWidth: 2, // Equivalent to "border-2"
     borderColor: "#FFFFFF", // Equivalent to "border-white"
+  },
+  clearButton: {
+    marginRight: 20,
+    marginTop: 11,
+  },
+  clearButtonText: {
+    color: "white",
+    fontSize: 18,
   },
 });
 

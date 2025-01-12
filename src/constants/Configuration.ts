@@ -2,10 +2,12 @@
 export const ARTIST_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w185";
 export const SEARCH_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w92";
 export const MOVIE_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w342";
+export const LOGO_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w45";
+
 
 export const API_CONFIG = {
   //baseUrl: 'http://127.0.0.1:8000/api/v1/tmdb',
-  baseUrl: 'http://192.168.1.7:8000/api/v1/tmdb',
+  baseUrl: 'http://192.168.1.3:8000/api/v1/tmdb',
   token: 'your-api-token', // Replace with your actual token if needed
 };
 

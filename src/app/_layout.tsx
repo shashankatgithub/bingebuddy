@@ -1,9 +1,10 @@
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import 'react-native-gesture-handler'; // Must be at the very top
+import 'react-native-reanimated';
 import React from "react";
 import { Provider } from "react-redux";
 import store from "../state/store";
 import { Slot } from "expo-router";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 
 export default function RootLayout() {
   return (

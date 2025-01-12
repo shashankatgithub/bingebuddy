@@ -7,41 +7,26 @@ import {
   Modal,
   Dimensions,
 } from "react-native";
-import RatingStars from "../atoms/RatingStars";
+import { Movie } from "../atoms/types";
+import ActionButtons from "./ActionButtons";
+import { ScrollView } from "react-native-gesture-handler";
+import { Image } from "expo-image";
+import {
+  ARTIST_IMAGE_BASE_URL,
+  LOGO_IMAGE_BASE_URL,
+  MOVIE_IMAGE_BASE_URL,
+} from "@/src/constants/Configuration";
+import { AppGradient } from "../atoms/CustomGradients";
+import { BlurView } from "expo-blur";
+import { FontAwesome } from "@expo/vector-icons";
+import imagePath from "@/src/constants/imagePath";
 
-const screenWidth = Dimensions.get("window").width;
-type Movie = {
-  id: string; // Unique identifier for the movie
-  title: string; // Name of the movie
-  poster_path: string; // Path to the movie's backdrop image
-  genre_ids: string[]; // List of genre IDs associated with the movie
-  release_date: string; // Release date of the movie
-  overview: string; // Brief description of the movie
-  vote_average: number; // Average rating of the movie
-  vote_count: number; // Number of votes the movie has received
-  backdrop_path: string; // Path to the movie's backdrop image
-  runtime: number; // Duration of the movie in minutes
-}
-
-// type User = {
-//   image: string;
-//   name: string;
-//   genre: Array<string>;
-//   year: number;
-//   description: string;
-//   rating: number;
-//   duration: string;
-//   watchOptions: Array<string>;
-// };
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 type CardDetailsModalProps = {
-  isVisible: boolean; // Change from `SharedValue<boolean>` to `boolean`
-  onClose: () => void; // Callback to close the modal
+  isVisible: boolean;
+  onClose: () => void;
   movie: Movie;
-};
-const convertToFivePointScale = (rating: number): number => {
-  const scaledRating = (rating / 10) * 5;
-  return Math.round(scaledRating * 2) / 2; // Round to nearest 0.5
 };
 
 const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
@@ -53,26 +38,118 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
     <Modal
       transparent
       visible={isVisible}
-      animationType="fade" // Fade animation for modal appearance
-      onRequestClose={onClose} // Close modal when back button is pressed on Android
+      animationType="fade"
+      onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          tint="dark"
+          intensity={50}
+        />
+        <AppGradient style={styles.modalContent}>
           <Pressable style={styles.closeButton} onPress={onClose}>
             <Text style={styles.closeButtonText}>✕</Text>
           </Pressable>
-          <Text style={styles.userName}>{movie.title}</Text>
-          <Text style={styles.userDescription}>{movie.overview}</Text>{}
-          <RatingStars rating={convertToFivePointScale(movie.vote_average)} />
-          <Text style={styles.userDetails}>Duration: {movie.runtime}</Text>
-          <Text style={styles.watchOptionsTitle}>Watch Options:</Text>
-          {/* {user.watchOptions &&
-            user.watchOptions.map((option, index) => (
-              <Text key={index} style={styles.watchOption}>
-                • {option}
+          <ScrollView>
+            {/* Movie Title and Year */}
+            <Text style={styles.movieTitle}>
+              {movie.title} (
+              {movie.release_date
+                ? new Date(movie.release_date).getFullYear()
+                : ""}
+              )
+            </Text>
+
+            {/* Poster Image */}
+            <Image
+              source={{
+                uri: `${MOVIE_IMAGE_BASE_URL}${movie.backdrop_path}`,
+                method: "POST",
+                headers: {
+                  Pragma: "no-cache",
+                },
+              }}
+              style={styles.posterImage}
+              contentFit="cover"
+            />
+
+            {/* Ratings, Duration, and Watch Options */}
+            <View style={styles.infoRow}>
+              <Text style={styles.infoText}>
+                {" "}
+                Rating : {movie.vote_average}
               </Text>
-            ))} */}
-        </View>
+              <Text style={styles.infoText}>Runtime : {movie.runtime} min</Text>
+              {movie.watch_providers?.flatrate?.[0]?.logo_path && (
+                <Image
+                  source={{
+                    uri: `${LOGO_IMAGE_BASE_URL}${movie.watch_providers.flatrate[0].logo_path}`,
+                  }}
+                  style={styles.providerLogo}
+                  contentFit="contain"
+                />
+              )}
+            </View>
+
+            {/* Synopsis */}
+            <Text style={styles.sectionTitle}>Synopsis</Text>
+            <Text style={styles.description}>{movie.overview}</Text>
+
+            {/* Cast & Crew */}
+            <Text style={styles.sectionTitle}>Cast & Crew</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {movie.credits?.cast?.length ? (
+                movie.credits.cast.map((actor, index) => (
+                  <View key={index} style={styles.castCard}>
+                    <Image
+                      source={
+                        actor.profile_path &&
+                        typeof actor.profile_path === "string" &&
+                        actor.profile_path.trim() !== ""
+                          ? {
+                              uri: `${ARTIST_IMAGE_BASE_URL}${actor.profile_path}`,
+                              method: "POST",
+                              headers: {
+                                Pragma: "no-cache",
+                              },
+                              body: "Your Body goes here",
+                            } // Remote image
+                          : imagePath.artist_img // Local fallback image (should be imported or required)
+                      }
+                      style={styles.castImage}
+                      contentFit="cover"
+                      contentPosition={"center"}
+                    />
+                    <Text style={styles.castName}>{actor.name}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.infoText}>No cast available</Text>
+              )}
+            </ScrollView>
+
+            {/* More like this */}
+            <Text style={styles.sectionTitle}>More like this:</Text>
+          </ScrollView>
+
+          <View style={styles.moreLikeThis}>
+            <ActionButtons
+              times={undefined}
+              star={undefined}
+              heart={undefined}
+            />
+          </View>
+          {/* Action Buttons */}
+          <View style={styles.bottomButtons}>
+            <Pressable style={styles.iconButton} onPress={onClose}>
+              <FontAwesome name="arrow-left" size={24} color="white" />
+            </Pressable>
+            <Pressable style={styles.iconButton}>
+              <FontAwesome name="bookmark" size={24} color="white" />
+            </Pressable>
+          </View>
+        </AppGradient>
       </View>
     </Modal>
   );
@@ -81,14 +158,16 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
     justifyContent: "center",
     alignItems: "center",
   },
   modalContent: {
-    width: screenWidth * 0.85,
+    width: screenWidth * 0.9,
+    height: screenHeight * 0.85,
     padding: 20,
     borderRadius: 15,
+    borderWidth: 2,
+    borderColor: "#ccc",
     backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -104,30 +183,76 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 20,
-    color: "gray",
+    color: "white",
   },
-  userName: {
+  movieTitle: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign: "center",
+    color: "white",
   },
-  userDescription: {
-    fontSize: 16,
+  posterImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
     marginBottom: 10,
-    color: "gray",
   },
-  userDetails: {
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  infoText: {
     fontSize: 16,
-    marginBottom: 5,
+    color: "white",
   },
-  watchOptionsTitle: {
+  providerLogo: {
+    width: 40,
+    height: 40,
+    marginLeft: 10,
+  },
+  sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 10,
+    marginVertical: 10,
+    color: "white",
   },
-  watchOption: {
+  description: {
     fontSize: 16,
-    marginLeft: 10,
+    marginBottom: 10,
+    color: "white",
+  },
+  castCard: {
+    alignItems: "center",
+    marginRight: 10,
+    width: 80,
+  },
+  castImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 5,
+  },
+  castName: {
+    fontSize: 12,
+    textAlign: "center",
+    color: "white",
+  },
+  moreLikeThis: {
+    alignItems: "center",
+  },
+  bottomButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 2,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  iconButton: {
+    padding: 10,
+    alignItems: "center",
   },
 });
 

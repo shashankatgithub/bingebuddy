@@ -38,22 +38,21 @@ const SignUp = () => {
   const handleSkipPress = async () => {
     const genres = getFromMMKV(StorageKeys.GENRES) || [];
     const languages = getFromMMKV(StorageKeys.LANGUAGES) || [];
-    const artists = getFromMMKV(StorageKeys.ARTISTS) || [];
+    const person = getFromMMKV(StorageKeys.PERSON) || [];
     console.log("Genres:", genres);
     console.log("languages:", languages);
-    console.log("artists:", artists);
+    console.log("person:", person);
 
     const params: Record<string, string[] | number> = {
-      genres : genres.join("|)"),
+      genres : genres.join("|"),
       languages : languages.join("|"),
-      artists : artists.join("|"),
+      artists : person.join("|"),
       page: 1,
     };
 
     
     try {
       const result = await discoverMovies(params).unwrap();
-      console.log("Discover movies response:", result);
 
       dispatch(setCurrentCards(result || []));
       dispatch(setIsLoggedIn(false));

@@ -11,7 +11,10 @@ import {
 import { useSharedValue, withSpring } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { PrimaryGradient } from "@/src/components/atoms/CustomGradients";
+import {
+  AppGradient,
+  PrimaryGradient,
+} from "@/src/components/atoms/CustomGradients";
 import { SUPPORTED_LANGUAGES } from "@/src/constants/Configuration";
 import { saveToMMKV } from "@/src/utils/mmkv";
 import { StorageKeys } from "@/src/utils/StorageKeys";
@@ -47,23 +50,32 @@ const LanguageSelection = () => {
     router.navigate("/GenreSelection");
   };
 
+  const handleClearQuery = () => {
+    setSearchQuery("");
+  };
+
   return (
-    <PrimaryGradient style={styles.gradientContainer}>
+    <AppGradient style={undefined}>
       <SafeAreaView className="flex-1">
         {/* Header */}
-        <View className="px-6 pb-10">
+        <View className="px-4 pb-10 w-full">
           <Text className="text-[#EAECEE] text-2xl font-bold text-center mb-3">
             Choose 2 or more languages you prefer the content in.
           </Text>
           {/* Search Bar */}
-          <View className="mt-1 bg-gray-700 rounded-full flex-row items-center px-4 py-2">
+          <View className="mt-1 bg-gray-700 rounded-full flex-row items-center py-2 w-full">
             <TextInput
               placeholder="Search"
               placeholderTextColor="#EAECEE"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              className="flex-1 text-white py-2 text-lg"
+              className="flex-1 text-white py-2 text-lg px-10"
             />
+            {searchQuery.trim().length > 0 && (
+              <Pressable onPress={handleClearQuery} style={styles.clearButton}>
+                <Text style={styles.clearButtonText}>✕</Text>
+              </Pressable>
+            )}
           </View>
         </View>
 
@@ -135,7 +147,7 @@ const LanguageSelection = () => {
           </Pressable>
         </View>
       </SafeAreaView>
-    </PrimaryGradient>
+    </AppGradient>
   );
 };
 
@@ -168,6 +180,14 @@ const styles = StyleSheet.create({
   defaultBorder: {
     borderWidth: 2, // Equivalent to "border-2"
     borderColor: "#FFFFFF", // Equivalent to "border-white"
+  },
+  clearButton: {
+    marginRight: 20,
+    marginTop: 11,
+  },
+  clearButtonText: {
+    color: "white",
+    fontSize: 18,
   },
 });
 

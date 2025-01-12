@@ -3,40 +3,37 @@ import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import CardDetailsModal from "../organisms/CardDetailsModal";
+import { useDispatch } from "react-redux";
 
 import Animated, {
-  SharedValue,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
 import { useTapGesture, usePanGesture } from "../molecules/Gestures";
-import { MOVIE_IMAGE_BASE_URL } from "@/src/constants/Configuration";
+import { MOVIE_IMAGE_BASE_URL, SUPPORTED_GENRES } from "@/src/constants/Configuration";
+import { ImageCardType } from "../atoms/types";
+import { handleSwipeLeft, handleSwipeRight, handleSwipeUp } from "../molecules/SwipeHandler";
 
 const screenWidth = Dimensions.get("screen").width;
 
 export const imageCardWidth = screenWidth * 0.9;
 
-type ImageCard = {
-  movie: {
-    poster_path: string;
-    title: string;
-    genre_ids: string[];
-    release_date: string;
-    overview: string;
-    vote_average: number;
-    runtime: string;
-    //watchOptions: Array<string>;
-  };
-  numOfCards: number;
-  index: number;
-  activeIndex: SharedValue<number>;
-};
-
-const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCard) => {
+const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => {
+  const dispatch = useDispatch();
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const getGenreNames = (genreIds) => {
+    return genreIds
+      .map((id) => {
+        const genre = SUPPORTED_GENRES.find((g) => g.id === id);
+        return genre ? genre.name : null; // If not found, return null
+      })
+      .filter(Boolean) // Remove null values
+      .join(", "); // Join names with commas
+  };
 
   const animatedCard = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -50,13 +47,6 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCard) => {
           activeIndex.value,
           [index - 1, index, index + 1],
           [0.95, 1, 1]
-        ),
-      },
-      {
-        translateY: interpolate(
-          activeIndex.value,
-          [index - 1, index, index + 1],
-          [-32, 0, 0]
         ),
       },
       { translateY: translationY.value },
@@ -73,18 +63,6 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCard) => {
     ],
   }));
 
-  const handleSwipeRight = () => {
-    console.log("Swiped right");
-  };
-
-  const handleSwipeLeft = () => {
-    console.log("Swiped left");
-  };
-
-  const handleSwipeUp = () => {
-    console.log("Swiped up");
-  };
-
   const tapGesture = useTapGesture(() => {
     console.log("Tapped");
     setModalVisible(true);
@@ -95,9 +73,11 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCard) => {
     translationY,
     activeIndex,
     index,
+    movie,
     handleSwipeRight,
     handleSwipeLeft,
-    handleSwipeUp
+    handleSwipeUp,
+    dispatch
   );
 
   return (
@@ -136,8 +116,8 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCard) => {
 
         <View style={styles.footer}>
           <Text style={styles.name}>{movie.title}</Text>
-          <Text style={styles.genre}>{movie.genre_ids}</Text>
-          <Text style={styles.yearAndDuration}>{movie.release_date} , {movie.runtime}</Text>
+          <Text style={styles.genre}>{getGenreNames(movie.genre_ids)}</Text>
+          <Text style={styles.yearAndDuration}>{movie.release_date?.split("-")[0]}, {movie.runtime}m</Text>
         </View>
         <CardDetailsModal
           isVisible={modalVisible}
@@ -152,7 +132,7 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCard) => {
 const styles = StyleSheet.create({
   card: {
     width: imageCardWidth,
-    aspectRatio: 1 / 1.67,
+    aspectRatio: 1 / 1.87,
     borderRadius: 15,
     justifyContent: "flex-end",
 

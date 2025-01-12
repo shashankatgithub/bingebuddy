@@ -1,6 +1,7 @@
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import React, { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
-//import { MMKV } from "react-native-mmkv";
 import { useSelector } from "react-redux";
 import { Redirect, Stack } from "expo-router";
 import "../../global.css";
@@ -9,7 +10,8 @@ import SearchScreen from "@/src/app/(main)/search/SearchScreen";
 import ProfileScreen from "./(main)/profile/ProfileScreen";
 import FilterScreen from "@/src/app/(main)/filter/FilterScreen";
 import HomeScreen from "./(main)/home/homeScreen";
-
+import { enableLayoutAnimations } from 'react-native-reanimated';
+enableLayoutAnimations(true); // Enables logs for layout animations
 //const storage = new MMKV();
 
 SplashScreen.preventAutoHideAsync();

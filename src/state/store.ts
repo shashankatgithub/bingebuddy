@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userSlice from './userSlice';
 import { bingeServiceApi } from '../api/bingeService';
+import filterSlice from './filterSlice';
 
 const store = configureStore({
     reducer: {
         [bingeServiceApi.reducerPath]: bingeServiceApi.reducer,
-        user: userSlice
+        user: userSlice,
+        filters: filterSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(bingeServiceApi.middleware),

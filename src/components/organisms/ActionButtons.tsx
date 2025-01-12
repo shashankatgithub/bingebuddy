@@ -11,7 +11,7 @@ interface ActionButtonsProps {
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({ times, star, heart, style }) => {
     return (
-        <View style={style}className="relative flex-row justify-between w-full px-16 py-4">
+        <View style={style}className="relative flex-row justify-between w-full px-16 py-1">
             <Pressable
                 onPress={() => {
                     times;

@@ -12,7 +12,7 @@ import { useSharedValue, withSpring } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import imagePath from "@/src/constants/imagePath";
-import { PrimaryGradient } from "@/src/components/atoms/CustomGradients";
+import { AppGradient, PrimaryGradient } from "@/src/components/atoms/CustomGradients";
 import { useSelector } from "react-redux";
 import { ARTIST_IMAGE_BASE_URL } from "@/src/constants/Configuration";
 import { Image } from "expo-image";
@@ -22,11 +22,11 @@ import { saveToMMKV } from "@/src/utils/mmkv";
 
 const ArtistSelection = () => {
   const blurhash = "L87KC-NG01?Ge-fkbbf50gt6~AIo";
-  const [selectedArtists, setSelectedArtists] = useState<number[]>([]);
+  const [selectedPerson, setSelectedPerson] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const doneScale = useSharedValue(1);
   const router = useRouter();
-  const artists = useSelector((state: any) => state.user.artists);
+  const artists = useSelector((state: any) => state.user.person);
 
   const getDisplayName = (name) => {
     if (name.length > 10) {
@@ -44,10 +44,10 @@ const ArtistSelection = () => {
   };
 
   const toggleSelection = (id: number) => {
-    if (selectedArtists.includes(id)) {
-      setSelectedArtists(selectedArtists.filter((artistId) => artistId !== id));
+    if (selectedPerson.includes(id)) {
+      setSelectedPerson(selectedPerson.filter((artistId) => artistId !== id));
     } else {
-      setSelectedArtists([...selectedArtists, id]);
+      setSelectedPerson([...selectedPerson, id]);
     }
   };
 
@@ -59,27 +59,31 @@ const ArtistSelection = () => {
     doneScale.value = withSpring(1.2, {}, () => {
       doneScale.value = withSpring(1);
     });
-    console.log("Selected Artist IDs:", selectedArtists);
-    saveToMMKV(StorageKeys.ARTISTS, selectedArtists);
+    console.log("Selected Person IDs:", selectedPerson);
+    saveToMMKV(StorageKeys.PERSON, selectedPerson);
     router.navigate("/SignUp");
   };
 
+  const handleClearQuery = () => {
+    setSearchQuery("");
+  };
+
   return (
-    <PrimaryGradient style={styles.gradientContainer}>
+    <AppGradient style={undefined}>
       <SafeAreaView className="flex-1">
         {/* Header */}
-        <View className="px-6 pb-10">
+        <View className="px-4 pb-10 w-full">
           <Text className="text-[#EAECEE] text-2xl font-bold text-center mb-3">
             Choose 3 or more artists you like.
           </Text>
           {/* Search Bar */}
-          <View className="mt-1 bg-gray-700 rounded-full flex-row items-center px-4 py-2">
+          <View className="mt-1 bg-gray-700 rounded-full flex-row items-center py-2 w-full">
             <TextInput
               placeholder="Search"
               placeholderTextColor="#EAECEE"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              className="flex-1 text-white py-2 text-lg"
+              className="flex-1 text-white py-2 text-lg px-10"
             />
           </View>
         </View>
@@ -91,7 +95,7 @@ const ArtistSelection = () => {
           numColumns={3}
           columnWrapperStyle={{
             justifyContent: "space-between",
-            paddingHorizontal: 1,
+            paddingHorizontal: 20,
           }}
           contentContainerStyle={{ paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
@@ -120,34 +124,15 @@ const ArtistSelection = () => {
                 placeholder={{ blurhash }}
                 contentFit="cover"
                 transition={500}
-                // source={{
-                //   uri:
-                //     item.profile_path &&
-                //     typeof item.profile_path === "string" &&
-                //     item.profile_path.trim() !== ""
-                //       ? `${IMAGE_BASE_URL}${item.profile_path}`
-                //       : imagePath.artist_img, // Fallback image
-                //   method: "POST",
-                //   headers: {
-                //     Pragma: "no-cache",
-                //   },
-                //   body: "Your Body goes here",
-                // }}
                 style={[
                   styles.artistImage, // Base style
-                  selectedArtists.includes(item.id)
+                  selectedPerson.includes(item.id)
                     ? styles.selectedBorder // Selected border style
                     : styles.defaultBorder, // Default border style
                 ]}
-                //source={imagePath.artist_img}
-                // className={`w-32 h-32 rounded-full ${
-                //   selectedArtists.includes(item.id)
-                //     ? "border-4 border-gray-500"
-                //     : "border-2 border-white"
-                // }`}
               />
               {/* Tick Mark */}
-              {selectedArtists.includes(item.id) && (
+              {selectedPerson.includes(item.id) && (
                 <View className="absolute top-2 right-2 w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center">
                   <Text className="text-white font-bold text-lg">✓</Text>
                 </View>
@@ -171,16 +156,16 @@ const ArtistSelection = () => {
           {/* Forward Arrow */}
           <Pressable
             className={`rounded-full w-12 h-12 items-center justify-center ${
-              selectedArtists.length >= 3 ? "bg-green-500" : "bg-gray-300"
+              selectedPerson.length >= 3 ? "bg-green-500" : "bg-gray-300"
             }`}
-            disabled={selectedArtists.length < 3}
+            disabled={selectedPerson.length < 3}
             onPress={handleDonePress}
           >
             <Ionicons name="chevron-forward-sharp" size={24} color="black" />
           </Pressable>
         </View>
       </SafeAreaView>
-    </PrimaryGradient>
+    </AppGradient>
   );
 };
 

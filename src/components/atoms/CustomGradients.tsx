@@ -44,12 +44,12 @@ export const SecondaryGradient = ({ style, children }) => (
   </LinearGradient>
 );
 
-export const AppGradient = ({ style, children }) => (
+export const AppGradient = ({ style ,children }) => (
   <LinearGradient
         colors={gradients.appGradient.colors}
         start={gradients.appGradient.start}
         end={gradients.appGradient.end}
-        style={globalStyles.gradientContainer}
+        style={style ? style : globalStyles.gradientContainer}
       >
         {children}
       </LinearGradient>

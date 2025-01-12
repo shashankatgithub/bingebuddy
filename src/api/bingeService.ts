@@ -1,32 +1,56 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { API_CONFIG } from "@/src/constants/Configuration";
 
+const retryWithExponentialBackoff = async (
+  baseQueryFn,
+  args,
+  api,
+  extraOptions,
+  retries = 3,
+  delay = 100
+) => {
+  let attempts = 0;
+  let result;
+  while (attempts < retries) {
+    attempts += 1;
+    result = await baseQueryFn(args, api, extraOptions);
+    if (!result.error) {
+      return result;
+    }
+    if (attempts < retries) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, delay * 2 ** (attempts - 1))
+      );
+    }
+  }
+  return result;
+};
+
 export const bingeServiceApi = createApi({
   reducerPath: "bingeServiceApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_CONFIG.baseUrl,
-    prepareHeaders: (headers) => {
-      const token = API_CONFIG.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: async (args, api, extraOptions) => {
+    const baseQueryFn = fetchBaseQuery({
+      baseUrl: API_CONFIG.baseUrl,
+      prepareHeaders: (headers) => {
+        const token = API_CONFIG.token;
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+        return headers;
+      },
+    });
+
+    // Apply exponential retry logic
+    return retryWithExponentialBackoff(baseQueryFn, args, api, extraOptions);
+  },
   endpoints: (builder) => ({
     getActors: builder.query({
       query: ({ genres, languages }) => ({
         url: "/top-actors",
-        params: {
-          genres: genres.join(","), // Ensure this matches the server's expected parameter
-          languages: languages.join(","),
-        },
+        params: { genres, languages },
       }),
       async onQueryStarted({ genres, languages }, { queryFulfilled }) {
-        // Log the request being made
-        console.log("Request to /top-actors:");
-        console.log("Genres:", genres);
-        console.log("Languages:", languages);
+        console.log("Request to /top-actors:", { genres, languages });
 
         try {
           const result = await queryFulfilled;
@@ -37,23 +61,19 @@ export const bingeServiceApi = createApi({
       },
     }),
     newDiscoverMovies: builder.query({
-      query: (params: Record<string, any>) => {
-        const queryParams = {
-          ...params, // Use the params object directly
-          page: params.page || 1, // Ensure page has a default value
-        };
-    
-        return {
-          url: "/discover-movies",
-          params: queryParams, // Send the queryParams as-is
-        };
-      },
+      query: (params) => ({
+        url: "/discover-movies",
+        params: {
+          ...params,
+          page: params.page || 1,
+        },
+      }),
       async onQueryStarted(params, { queryFulfilled }) {
         console.log("Request to /discover-movies:", params);
-    
+
         try {
           const result = await queryFulfilled;
-          console.log("Response from /discover-movies:", result.data);
+          //console.log("Response from /discover-movies:", result.data);
         } catch (error) {
           console.error("Error from /discover-movies:", error);
         }
@@ -63,43 +83,41 @@ export const bingeServiceApi = createApi({
       query: ({ genres, languages, artists, page = 1, release_date }) => ({
         url: "/discover-movies",
         params: {
-          genres: genres.join(","), // Comma-separated genres
-          languages: languages.join(","), // Comma-separated languages
-          artists: artists.join(","), // Comma-separated artists
-          page, // Optional page number
-          release_date, // Optional release date
+          genres: genres.join(","),
+          languages: languages.join(","),
+          artists: artists.join(","),
+          page,
+          release_date,
         },
       }),
       async onQueryStarted(
         { genres, languages, artists, page, release_date },
         { queryFulfilled }
       ) {
-        // Log the request being made
-        console.log("Request to /discover-movies:");
-        console.log("Genres:", genres);
-        console.log("Languages:", languages);
-        console.log("Artists:", artists);
-        console.log("Page:", page);
-        console.log("Release Date:", release_date);
+        console.log("Request to /discover-movies:", {
+          genres,
+          languages,
+          artists,
+          page,
+          release_date,
+        });
 
         try {
           const result = await queryFulfilled;
-          console.log("Response from /discover-movies:", result.data);
+          //console.log("Response from /discover-movies:", result.data);
         } catch (error) {
           console.error("Error from /discover-movies:", error);
         }
       },
     }),
     getSearchPageData: builder.query({
-      query: () => ({
-        url: "/search-page",
-      }),
+      query: () => ({ url: "/search-page" }),
       async onQueryStarted(_, { queryFulfilled }) {
         console.log("Request to /search-page");
 
         try {
           const result = await queryFulfilled;
-          console.log("Response from /search-page:", result.data);
+          //console.log("Response from /search-page:", result.data);
         } catch (error) {
           console.error("Error from /search-page:", error);
         }
@@ -119,5 +137,5 @@ export const {
   useLazyDiscoverMoviesQuery,
   useLazyGetSearchPageDataQuery,
   useLazySearchQuery,
-  useLazyNewDiscoverMoviesQuery
+  useLazyNewDiscoverMoviesQuery,
 } = bingeServiceApi;

@@ -3,30 +3,41 @@ import ImageCard from "@/src/components/pages/ImageCard";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useAnimatedReaction,
   useSharedValue,
   runOnJS,
 } from "react-native-reanimated";
-import { globalStyles, gradients } from "@/src/styles";
+import { globalStyles } from "@/src/styles";
 import ActionButtons from "@/src/components/organisms/ActionButtons";
 
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { BottomTabParamList } from "@/src/components/atoms/types";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AppGradient } from "@/src/components/atoms/CustomGradients";
+import { MAX_STORAGE_SIZE, allKeys, manageStorage, mmkv, totalSize } from "@/src/utils/mmkv";
+import { setCurrentCards } from "@/src/state/userSlice";
 
 type HomeScreenProps = BottomTabScreenProps<BottomTabParamList, "Home">;
 
-
 const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
   const { initialCards = [] } = route.params || {};
-  console.log("Initial Cards:", initialCards);
+  // TODO The homescreen is redenred multiple times
+  //console.log("Initial Cards:", initialCards);
+  // console.log(`MMKV total size: ${totalSize} bytes`);
+  // allKeys.forEach((key) => {
+  //   const value = mmkv.getString(key) || '';
+  //   console.log(`Key: ${key}, Size: ${value.length} bytes`);
+  //   manageStorage();
+  // });
+
   const reduxCurrentCards = useSelector(
     (state: any) => state.user.currentCards
   );
   const currentCards =
     initialCards && initialCards.length > 0 ? initialCards : reduxCurrentCards;
+  const dispatch = useDispatch();
 
   //const nextCards = useSelector((state: any) => state.user.nextCards);
   const [movies, setMovies] = useState(currentCards);
@@ -41,8 +52,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
       }
     }
   );
+
   useEffect(() => {
     setMovies(currentCards);
+    dispatch(setCurrentCards(currentCards || []));
   }, [currentCards]);
 
   useEffect(() => {
@@ -57,31 +70,28 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ route }) => {
   }, [index]);
 
   return (
-    <LinearGradient
-      colors={gradients.appGradient.colors}
-      start={gradients.appGradient.start}
-      end={gradients.appGradient.end}
-      style={globalStyles.gradientContainer}
-    >
-      <View className="flex-1 items-center justify-center">
-        <Stack.Screen options={{ headerShown: false }} />
-        {movies.map((movie, index) => (
-          <ImageCard
-            key={`${movie.id}-${index}`}
-            movie={movie}
-            numOfCards={movies.length}
-            index={index}
-            activeIndex={activeIndex}
-          />
-        ))}
+    <SafeAreaProvider className="flex-1 justify-center items-center">
+      <AppGradient style={undefined}>
+        <View className="flex-1 items-center top-20">
+          <Stack.Screen options={{ headerShown: false }} />
+          {movies.map((movie, index) => (
+            <ImageCard
+              key={`${movie.id}-${index}`}
+              movie={movie}
+              numOfCards={movies.length}
+              index={index}
+              activeIndex={activeIndex}
+            />
+          ))}
+        </View>
         <ActionButtons
-          times={undefined}
-          star={undefined}
-          heart={undefined}
-          style={globalStyles.actionButtonStyle}
-        ></ActionButtons>
-      </View>
-    </LinearGradient>
+            times={undefined}
+            star={undefined}
+            heart={undefined}
+            style={globalStyles.actionButtonStyle}
+          ></ActionButtons>
+      </AppGradient>
+    </SafeAreaProvider>
   );
 };
 

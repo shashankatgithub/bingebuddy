@@ -5,22 +5,22 @@ import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("screen").width;
 const screenHeight = Dimensions.get("screen").height;
 
-// Tap Gesture Hook
 export const useTapGesture = (onTapCallback) => {
   return Gesture.Tap().onEnd(() => {
     runOnJS(onTapCallback)();
   });
 };
 
-// Pan Gesture Hook
 export const usePanGesture = (
   translationX,
   translationY,
   activeIndex,
   index,
+  movie,
   handleSwipeRight,
   handleSwipeLeft,
-  handleSwipeUp
+  handleSwipeUp,
+  dispatch
 ) => {
   return Gesture.Pan()
     .onChange((event) => {
@@ -43,14 +43,14 @@ export const usePanGesture = (
         );
         activeIndex.value = withSpring(index + 1);
         if (velocityX > 400) {
-          runOnJS(handleSwipeRight)();
+          runOnJS(handleSwipeRight)(movie,dispatch);
         } else if (velocityX < -400) {
-          runOnJS(handleSwipeLeft)();
+          runOnJS(handleSwipeLeft)(movie,dispatch);
         }
       } else if (velocityY < -400 || event.translationY < -150) {
         translationY.value = withSpring(-screenHeight * 1);
         activeIndex.value = withSpring(index + 1); 
-        runOnJS(handleSwipeUp)();
+        runOnJS(handleSwipeUp)(movie,dispatch);
       } else {
         translationX.value = withSpring(0);
         translationY.value = withSpring(0);
