@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
 import {
   View,
   Text,
-  Pressable,
   StyleSheet,
   FlatList,
+  TouchableOpacity,
+  Platform,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { AppGradient } from "@/src/components/atoms/CustomGradients";
-import imagePath from "@/src/constants/imagePath";
 import { useSelector } from "react-redux";
 import { MOVIE_IMAGE_BASE_URL } from "@/src/constants/Configuration";
+import { AppGradient } from "@/src/components/atoms/CustomGradients";
+import imagePath from "@/src/constants/imagePath";
+import BottomSheet, {
+  BottomSheetView,
+  useBottomSheetSpringConfigs,
+  BottomSheetBackdrop,
+  BottomSheetFlatList,
+} from "@gorhom/bottom-sheet";
+import { HeaderHandle } from "@/src/components/molecules/HeaderHandle";
+import { CustomBackground } from "@/src/components/molecules/CustomBackground";
 
 const generateFunnyName = () => {
   const funnyNames = [
@@ -23,13 +34,13 @@ const generateFunnyName = () => {
   ];
   return funnyNames[Math.floor(Math.random() * funnyNames.length)];
 };
+
 const MovieSection = ({ title, movies }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <View style={styles.sectionContainer}>
-      {/* Section Header */}
-      <Pressable
+      <TouchableOpacity
         style={styles.sectionHeader}
         onPress={() => setExpanded((prev) => !prev)}
       >
@@ -39,11 +50,10 @@ const MovieSection = ({ title, movies }) => {
           size={20}
           color="white"
         />
-      </Pressable>
+      </TouchableOpacity>
 
-      {/* Movie List */}
       <FlatList
-        key={expanded ? "vertical" : "horizontal"} // Force re-render when layout changes
+        key={expanded ? "vertical" : "horizontal"}
         data={movies}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
@@ -53,33 +63,110 @@ const MovieSection = ({ title, movies }) => {
             <Image
               source={{
                 uri: `${MOVIE_IMAGE_BASE_URL}${item.poster_path}`,
-                method: "POST",
-                headers: {
-                  Pragma: "no-cache",
-                },
-                body: "Your Body goes here",
-
-                //uri: movie.poster_path
               }}
               style={styles.movieImage}
             />
-            <Text style={styles.movieTitle}>{item.title}</Text>
+            <View style={styles.matchContainer}>
+              <Text style={styles.matchText}>85%</Text>
+            </View>
           </View>
         )}
         horizontal={!expanded}
-        numColumns={expanded ? 3 : 1} // Show columns when expanded
+        numColumns={expanded ? 3 : 1}
         showsHorizontalScrollIndicator={false}
       />
     </View>
   );
 };
+
 const ProfileScreen = () => {
   const reduxCurrentCards = useSelector(
     (state: any) => state.user.currentCards
   );
-  console.log(reduxCurrentCards);
-  const userLoggedIn = false; // Replace with actual login state
+  const userLoggedIn = false;
   const userName = userLoggedIn ? "John Doe" : generateFunnyName();
+  const userLikes = 120; // Sample data
+  const userWatchlist = 193; // Sample data
+  const userWatched = 34; // Sample data
+  const badgeData = 34; // Sample data
+  const snapPoints = useMemo(() => ["50%", "70%"], []);
+  const animationConfigs = useBottomSheetSpringConfigs({
+    damping: 80,
+    overshootClamping: true,
+    restDisplacementThreshold: 0.1,
+    restSpeedThreshold: 0.1,
+    stiffness: 500,
+  });
+
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const renderItem = useCallback(({ item }) => {
+    return (
+      <View style={styles.badgeContainer}>
+        <Text style={styles.badgeText}>{item}</Text>
+      </View>
+    );
+  }, []);
+
+  const renderHeaderHandle = useCallback(
+    (props) => <HeaderHandle {...props} children="Badges" />,
+    []
+  );
+
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        pressBehavior="close"
+        appearsOnIndex={1}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
+  const handleBadgeClick = useCallback(() => {
+    bottomSheetRef.current?.snapToIndex(0);
+  }, []);
+
+  const sheetSections = useMemo(
+    () => [
+      "Verified",
+      "Newbie",
+      "Talented",
+      "Expert",
+      "Student",
+      "Scientist",
+      "Friendly",
+      "Social",
+      "Wildfire",
+      "Inferno",
+      "Addict",
+      "Collector",
+      "Organizer",
+      "Favourite",
+      "Explosive",
+      "Wildfire",
+      "Addict",
+      "Verified",
+      "Newbie",
+      "Talented",
+      "Expert",
+      "Student",
+      "Scientist",
+      "Friendly",
+      "Social",
+      "Wildfire",
+      "Inferno",
+      "Addict",
+      "Collector",
+      "Organizer",
+      "Favourite",
+      "Explosive",
+      "Wildfire",
+      "Addict",
+    ],
+    []
+  );
 
   const sections = [
     { id: "1", title: "Watchlist", movies: reduxCurrentCards },
@@ -90,32 +177,85 @@ const ProfileScreen = () => {
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       <AppGradient style={undefined}>
+        <View style={styles.userInfoContainer}>
+          <Image source={imagePath.artist_img} style={styles.userImage} />
+          <Text style={styles.userName}>{userName}</Text>
+          <View style={styles.userStatsContainer}>
+            {/* Custom stats layout */}
+            <View style={styles.statsWrapper}>
+              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
+                <Text style={styles.statsCount}>{userLikes}</Text>
+                <Text style={styles.statsLabel}>Likes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
+                <Text style={styles.statsCount}>{userWatchlist}</Text>
+                <Text style={styles.statsLabel}>Watchlist</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
+                <Text style={styles.statsCount}>{userWatched}</Text>
+                <Text style={styles.statsLabel}>Watched</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.statBox}
+                onPress={handleBadgeClick}
+              >
+                <Text style={styles.statsCount}>{badgeData}</Text>
+                <Text style={styles.statsLabel}>Badges</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
         <FlatList
           data={sections}
           keyExtractor={(item) => item.id}
-          ListHeaderComponent={
-            <View style={styles.userInfoContainer}>
-              <Image source={imagePath.artist_img} style={styles.userImage} />
-              <Text style={styles.userName}>{userName}</Text>
-            </View>
-          }
           renderItem={({ item }) => (
             <MovieSection title={item.title} movies={item.movies} />
           )}
         />
+
+        {/* Bottom Sheet to show badges */}
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1} // Bottom sheet starts closed
+          snapPoints={snapPoints}
+          animationConfigs={animationConfigs}
+          enableContentPanningGesture={true}
+          enableHandlePanningGesture={true}
+          enableDynamicSizing={false}
+          enablePanDownToClose={true}
+          backdropComponent={renderBackdrop}
+          handleComponent={renderHeaderHandle}
+          animateOnMount={true}
+          backgroundComponent={CustomBackground}
+        >
+          <BottomSheetView style={styles.contentContainer}>
+            <BottomSheetFlatList
+              style={styles.sheetSectionContainer}
+              data={sheetSections}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderItem}
+              contentContainerStyle={styles.sheetContentContainer}
+              numColumns={3}
+              bounces={true}
+              focusHook={useFocusEffect}
+              removeClippedSubviews={
+                Platform.OS === "android" && sections.length > 0
+              }
+            />
+          </BottomSheetView>
+        </BottomSheet>
       </AppGradient>
     </SafeAreaProvider>
   );
 };
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
   userInfoContainer: {
     alignItems: "center",
     marginBottom: 20,
     paddingTop: 70,
+    position: "relative",
   },
   userImage: {
     width: 100,
@@ -127,6 +267,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "white",
+  },
+  userStatsContainer: {
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  statsWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    marginTop: 10,
+  },
+  statBox: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statsCount: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+  },
+  statsLabel: {
+    fontSize: 14,
+    color: "white",
+    marginTop: 5,
   },
   sectionContainer: {
     marginBottom: 20,
@@ -143,24 +307,65 @@ const styles = StyleSheet.create({
     color: "white",
   },
   movieCard: {
-    margin: 5,
+    margin: 0, // No margin between images when expanded
     alignItems: "center",
-    width: "30%", // Adjust for 3 columns
   },
   movieCardHorizontal: {
-    marginRight: 10,
+    marginRight: 0, // No margin between images when expanded
     alignItems: "center",
   },
   movieImage: {
-    width: 100,
-    height: 150,
+    width: 80,
+    height: 135,
     borderRadius: 10,
     marginBottom: 5,
   },
-  movieTitle: {
-    fontSize: 12,
+  matchContainer: {
+    position: "absolute",
+    bottom: 5,
+    left: 5,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    borderRadius: 5,
+  },
+  matchText: {
     color: "white",
-    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  badgeItem: {
+    margin: 10,
+    alignItems: "center",
+  },
+  customBackgroundText: {
+    fontSize: 18,
+    color: "white",
+  },
+  badgeContainer: {
+    backgroundColor: "#4A90E2",
+    borderRadius: 50,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    margin: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    fontSize: 14,
+    color: "white",
+    fontWeight: "bold",
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 36,
+    alignItems: "center",
+  },
+  sheetSectionContainer: {
+    flex: 1,
+  },
+  sheetContentContainer: {
+    paddingHorizontal: 16,
   },
 });
 

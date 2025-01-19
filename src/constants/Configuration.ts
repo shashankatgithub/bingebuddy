@@ -1,14 +1,14 @@
-// constants.js
-export const ARTIST_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w185";
-export const SEARCH_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w92";
-export const MOVIE_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w342";
-export const LOGO_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w45";
+const BASE_URL = "https://image.tmdb.org/t/p";
+
+export const ARTIST_IMAGE_BASE_URL = `${BASE_URL}/w185`;
+export const SEARCH_IMAGE_BASE_URL = `${BASE_URL}/w92`;
+export const MOVIE_IMAGE_BASE_URL = `${BASE_URL}/w342`;
+export const LOGO_IMAGE_BASE_URL = `${BASE_URL}/w45`;
 
 
 export const API_CONFIG = {
-  //baseUrl: 'http://127.0.0.1:8000/api/v1/tmdb',
   baseUrl: 'http://192.168.1.3:8000/api/v1/tmdb',
-  token: 'your-api-token', // Replace with your actual token if needed
+  token: 'your-api-token',
 };
 
 export const SUPPORTED_LANGUAGES = [
@@ -30,38 +30,37 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "gu",
     english_name: "Gujarati",
-    name: "",
+    name: "ગુજરાતી",
   },
   {
     iso_639_1: "kn",
     english_name: "Kannada",
-    name: "?????",
+    name: "ಕನ್ನಡ",
   },
-
   {
     iso_639_1: "ks",
     english_name: "Kashmiri",
-    name: "",
+    name: "کٛشمیری",
   },
   {
     iso_639_1: "mr",
     english_name: "Marathi",
-    name: "",
+    name: "मराठी",
   },
   {
     iso_639_1: "or",
     english_name: "Oriya",
-    name: "",
+    name: "ଓଡ଼ିଆ",
   },
   {
     iso_639_1: "sa",
     english_name: "Sanskrit",
-    name: "",
+    name: "संस्कृत",
   },
   {
     iso_639_1: "sd",
     english_name: "Sindhi",
-    name: "",
+    name: "سنڌي",
   },
   {
     iso_639_1: "ta",
@@ -93,7 +92,6 @@ export const SUPPORTED_LANGUAGES = [
     english_name: "Swahili",
     name: "Kiswahili",
   },
-
   {
     iso_639_1: "ps",
     english_name: "Pushto",
@@ -104,18 +102,16 @@ export const SUPPORTED_LANGUAGES = [
     english_name: "Cantonese",
     name: "广州话 / 廣州話",
   },
-
   {
     iso_639_1: "pi",
     english_name: "Pali",
-    name: "",
+    name: "पाळि",
   },
   {
     iso_639_1: "so",
     english_name: "Somali",
     name: "Somali",
   },
-
   {
     iso_639_1: "th",
     english_name: "Thai",
@@ -124,7 +120,7 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "cu",
     english_name: "Slavic",
-    name: "",
+    name: "Славянский",
   },
   {
     iso_639_1: "fr",
@@ -141,7 +137,6 @@ export const SUPPORTED_LANGUAGES = [
     english_name: "Arabic",
     name: "العربية",
   },
-
   {
     iso_639_1: "et",
     english_name: "Estonian",
@@ -150,19 +145,18 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "mn",
     english_name: "Mongolian",
-    name: "",
+    name: "Монгол хэл",
   },
   {
     iso_639_1: "my",
     english_name: "Burmese",
-    name: "",
+    name: "မြန်မာ",
   },
   {
     iso_639_1: "pt",
     english_name: "Portuguese",
     name: "Português",
   },
-
   {
     iso_639_1: "ka",
     english_name: "Georgian",
@@ -188,7 +182,6 @@ export const SUPPORTED_LANGUAGES = [
     english_name: "Irish",
     name: "Gaeilge",
   },
-
   {
     iso_639_1: "nl",
     english_name: "Dutch",
@@ -207,7 +200,7 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "ug",
     english_name: "Uighur",
-    name: "",
+    name: "ئۇيغۇرچە",
   },
   {
     iso_639_1: "bg",
@@ -222,7 +215,7 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "ne",
     english_name: "Nepali",
-    name: "",
+    name: "नेपाली",
   },
   {
     iso_639_1: "si",
@@ -232,12 +225,12 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "sn",
     english_name: "Shona",
-    name: "",
+    name: "Shona",
   },
   {
     iso_639_1: "su",
     english_name: "Sundanese",
-    name: "",
+    name: "Sunda",
   },
   {
     iso_639_1: "fi",
@@ -257,7 +250,7 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "hy",
     english_name: "Armenian",
-    name: "",
+    name: "Հայերեն",
   },
   {
     iso_639_1: "az",
@@ -269,7 +262,6 @@ export const SUPPORTED_LANGUAGES = [
     english_name: "Latvian",
     name: "Latviešu",
   },
-
   {
     iso_639_1: "pl",
     english_name: "Polish",
@@ -298,7 +290,7 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "ty",
     english_name: "Tahitian",
-    name: "",
+    name: "Reo Tahiti",
   },
   {
     iso_639_1: "he",
@@ -308,12 +300,12 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "as",
     english_name: "Assamese",
-    name: "",
+    name: "অসমীয়া",
   },
   {
     iso_639_1: "bo",
     english_name: "Tibetan",
-    name: "",
+    name: "བོད་ཡིག",
   },
   {
     iso_639_1: "ja",
@@ -330,11 +322,10 @@ export const SUPPORTED_LANGUAGES = [
     english_name: "Punjabi",
     name: "ਪੰਜਾਬੀ",
   },
-
   {
     iso_639_1: "am",
     english_name: "Amharic",
-    name: "",
+    name: "አማርኛ",
   },
   {
     iso_639_1: "fa",
@@ -359,18 +350,17 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "mi",
     english_name: "Maori",
-    name: "",
+    name: "Māori",
   },
   {
     iso_639_1: "ms",
     english_name: "Malay",
-    name: "Bahasa melayu",
+    name: "Bahasa Melayu",
   },
-
   {
     iso_639_1: "tk",
     english_name: "Turkmen",
-    name: "",
+    name: "Türkmen",
   },
   {
     iso_639_1: "af",
@@ -380,12 +370,12 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "cs",
     english_name: "Czech",
-    name: "Český",
+    name: "Čeština",
   },
   {
     iso_639_1: "ce",
     english_name: "Chechen",
-    name: "",
+    name: "Нохчийн",
   },
   {
     iso_639_1: "sk",
@@ -395,33 +385,32 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "tg",
     english_name: "Tajik",
-    name: "",
+    name: "Тоҷикӣ",
   },
   {
     iso_639_1: "cv",
     english_name: "Chuvash",
-    name: "",
+    name: "Чӳваш",
   },
   {
     iso_639_1: "da",
     english_name: "Danish",
     name: "Dansk",
   },
-
   {
     iso_639_1: "kg",
     english_name: "Kongo",
-    name: "",
+    name: "Kongo",
   },
   {
     iso_639_1: "ku",
     english_name: "Kurdish",
-    name: "",
+    name: "Kurdî",
   },
   {
     iso_639_1: "ml",
     english_name: "Malayalam",
-    name: "",
+    name: "മലയാളം",
   },
   {
     iso_639_1: "es",
@@ -431,7 +420,7 @@ export const SUPPORTED_LANGUAGES = [
   {
     iso_639_1: "sv",
     english_name: "Swedish",
-    name: "svenska",
+    name: "Svenska",
   },
   {
     iso_639_1: "te",
@@ -439,6 +428,7 @@ export const SUPPORTED_LANGUAGES = [
     name: "తెలుగు",
   },
 ];
+
 
 export const SUPPORTED_GENRES = [
   {
