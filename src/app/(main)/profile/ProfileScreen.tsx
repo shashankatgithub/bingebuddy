@@ -24,6 +24,10 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import { HeaderHandle } from "@/src/components/molecules/HeaderHandle";
 import { CustomBackground } from "@/src/components/molecules/CustomBackground";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import BingeScreen from "./BingeScreen";
+import SocialScreen from "./SocialScreen";
+import { BlurView } from "expo-blur";
 
 const generateFunnyName = () => {
   const funnyNames = [
@@ -35,60 +39,12 @@ const generateFunnyName = () => {
   return funnyNames[Math.floor(Math.random() * funnyNames.length)];
 };
 
-const MovieSection = ({ title, movies }) => {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <View style={styles.sectionContainer}>
-      <TouchableOpacity
-        style={styles.sectionHeader}
-        onPress={() => setExpanded((prev) => !prev)}
-      >
-        <Text style={styles.sectionTitle}>{title}</Text>
-        <Ionicons
-          name={expanded ? "chevron-up" : "chevron-down"}
-          size={20}
-          color="white"
-        />
-      </TouchableOpacity>
-
-      <FlatList
-        key={expanded ? "vertical" : "horizontal"}
-        data={movies}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View
-            style={expanded ? styles.movieCard : styles.movieCardHorizontal}
-          >
-            <Image
-              source={{
-                uri: `${MOVIE_IMAGE_BASE_URL}${item.poster_path}`,
-              }}
-              style={styles.movieImage}
-            />
-            <View style={styles.matchContainer}>
-              <Text style={styles.matchText}>85%</Text>
-            </View>
-          </View>
-        )}
-        horizontal={!expanded}
-        numColumns={expanded ? 3 : 1}
-        showsHorizontalScrollIndicator={false}
-      />
-    </View>
-  );
-};
+const Tab = createMaterialTopTabNavigator();
 
 const ProfileScreen = () => {
   const reduxCurrentCards = useSelector(
     (state: any) => state.user.currentCards
   );
-  const userLoggedIn = false;
-  const userName = userLoggedIn ? "John Doe" : generateFunnyName();
-  const userLikes = 120; // Sample data
-  const userWatchlist = 193; // Sample data
-  const userWatched = 34; // Sample data
-  const badgeData = 34; // Sample data
   const snapPoints = useMemo(() => ["50%", "70%"], []);
   const animationConfigs = useBottomSheetSpringConfigs({
     damping: 80,
@@ -97,6 +53,47 @@ const ProfileScreen = () => {
     restSpeedThreshold: 0.1,
     stiffness: 500,
   });
+
+  const UserInfoHeader = () => {
+    const userLoggedIn = false;
+    const userName = userLoggedIn ? "John Doe" : generateFunnyName();
+    const userLikes = 120;
+    const userWatchlist = 193;
+    const userWatched = 34;
+    const badgeData = 34;
+
+    return (
+      <View style={styles.userInfoContainer}>
+          <Image source={imagePath.artist_img} style={styles.userImage} />
+          <Text style={styles.userName}>{userName}</Text>
+          <View style={styles.userStatsContainer}>
+            {/* Custom stats layout */}
+            <View style={styles.statsWrapper}>
+              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
+                <Text style={styles.statsCount}>{userLikes}</Text>
+                <Text style={styles.statsLabel}>Likes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
+                <Text style={styles.statsCount}>{userWatchlist}</Text>
+                <Text style={styles.statsLabel}>Watchlist</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
+                <Text style={styles.statsCount}>{userWatched}</Text>
+                <Text style={styles.statsLabel}>Watched</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.statBox}
+                onPress={handleBadgeClick}
+              >
+                <Text style={styles.statsCount}>{badgeData}</Text>
+                <Text style={styles.statsLabel}>Badges</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+    );
+  };
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -176,44 +173,25 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
-      <AppGradient style={undefined}>
-        <View style={styles.userInfoContainer}>
-          <Image source={imagePath.artist_img} style={styles.userImage} />
-          <Text style={styles.userName}>{userName}</Text>
-          <View style={styles.userStatsContainer}>
-            {/* Custom stats layout */}
-            <View style={styles.statsWrapper}>
-              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
-                <Text style={styles.statsCount}>{userLikes}</Text>
-                <Text style={styles.statsLabel}>Likes</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
-                <Text style={styles.statsCount}>{userWatchlist}</Text>
-                <Text style={styles.statsLabel}>Watchlist</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.statBox} onPress={() => {}}>
-                <Text style={styles.statsCount}>{userWatched}</Text>
-                <Text style={styles.statsLabel}>Watched</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.statBox}
-                onPress={handleBadgeClick}
-              >
-                <Text style={styles.statsCount}>{badgeData}</Text>
-                <Text style={styles.statsLabel}>Badges</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-        <FlatList
-          data={sections}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <MovieSection title={item.title} movies={item.movies} />
-          )}
-        />
-
+      <AppGradient style={{ flex: 1 }}>
+        <UserInfoHeader />
+        <Tab.Navigator
+          backBehavior="firstRoute"
+          tabBarPosition="top"
+          screenOptions={{
+            tabBarStyle: { backgroundColor: "transparent" },
+            tabBarLabelStyle: { color: "white", fontWeight: "bold",fontSize:16 },
+            tabBarIndicatorStyle: { backgroundColor: "white" },
+            tabBarBounces:true,
+          }}
+          
+        >
+          <Tab.Screen
+            name="Binge"
+            children={() => <BingeScreen movies={reduxCurrentCards} />}
+          />
+          <Tab.Screen name="Social" component={SocialScreen} />
+        </Tab.Navigator>
         {/* Bottom Sheet to show badges */}
         <BottomSheet
           ref={bottomSheetRef}
@@ -367,6 +345,43 @@ const styles = StyleSheet.create({
   sheetContentContainer: {
     paddingHorizontal: 16,
   },
+  blurView: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  tabBarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly", // Equal spacing for tabs
+    height: 50, // Consistent height for tab container
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Fallback color
+  },
+  tabLabelContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  tabLabel: {
+    fontSize: 14, // Standard font size
+    color: "white",
+  },
+  tabLabelFocused: {
+    fontWeight: "bold",
+    color: "white",
+    fontSize: 16, // Slightly larger font for focused tab
+  },
+  separator: {
+    width: 1, // Thin separator width
+    height: "70%", // Separator height covering 70% of the container
+    backgroundColor: "white", // Separator color
+    marginHorizontal: -1, // Adjust margin for precise alignment
+    alignSelf: "center", // Center the separator vertically
+  },
 });
 
 export default ProfileScreen;
+

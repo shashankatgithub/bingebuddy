@@ -1,8 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { MOVIE_IMAGE_BASE_URL } from "@/src/constants/Configuration";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AppGradient } from "@/src/components/atoms/CustomGradients";
 
 const MovieSection = ({ title, movies }) => {
   const [expanded, setExpanded] = useState(false);
@@ -18,6 +26,7 @@ const MovieSection = ({ title, movies }) => {
           name={expanded ? "chevron-up" : "chevron-down"}
           size={20}
           color="white"
+          style={{ paddingRight: 10 }}
         />
       </TouchableOpacity>
 
@@ -53,28 +62,36 @@ const BingeScreen = ({ movies }) => {
   ];
 
   return (
-    <FlatList
-      data={sections}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <MovieSection title={item.title} movies={item.movies} />
-      )}
-    />
+    <AppGradient style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 ,paddingTop:5}} edges={["left", "right", "bottom"]}>
+        <FlatList
+          data={sections}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <MovieSection title={item.title} movies={item.movies} />
+          )}
+        />
+      </SafeAreaView>
+    </AppGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: { marginBottom: 20 },
+  sectionContainer: { marginBottom: 10 },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
   },
-  sectionTitle: { fontSize: 16, fontWeight: "bold", color: "white" },
-  movieCard: { margin: 10, alignItems: "center" },
-  movieCardHorizontal: { marginRight: 10, alignItems: "center" },
-  movieImage: { width: 80, height: 135, borderRadius: 10 },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+    padding: 10,
+  },
+  movieCard: { alignItems: "center" },
+  movieCardHorizontal: { alignItems: "center" },
+  movieImage: { width: 140, height: 210 },
 });
 
 export default BingeScreen;
