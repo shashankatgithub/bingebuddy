@@ -26,8 +26,9 @@ import { HeaderHandle } from "@/src/components/molecules/HeaderHandle";
 import { CustomBackground } from "@/src/components/molecules/CustomBackground";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import BingeScreen from "./BingeScreen";
-import SocialScreen from "./SocialScreen";
+import SocialScreen from "./ActivityScreen";
 import { BlurView } from "expo-blur";
+import ActivityScreen from "./ActivityScreen";
 
 const generateFunnyName = () => {
   const funnyNames = [
@@ -190,7 +191,7 @@ const ProfileScreen = () => {
             name="Binge"
             children={() => <BingeScreen movies={reduxCurrentCards} />}
           />
-          <Tab.Screen name="Social" component={SocialScreen} />
+          <Tab.Screen name="Activity" component={ActivityScreen} />
         </Tab.Navigator>
         {/* Bottom Sheet to show badges */}
         <BottomSheet

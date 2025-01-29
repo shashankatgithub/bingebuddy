@@ -7,7 +7,7 @@ export const LOGO_IMAGE_BASE_URL = `${BASE_URL}/w45`;
 
 
 export const API_CONFIG = {
-  baseUrl: 'http://192.168.1.3:8000/api/v1/tmdb',
+  baseUrl: 'http://192.168.1.4:8000/api/v1/tmdb',
   token: 'your-api-token',
 };
 

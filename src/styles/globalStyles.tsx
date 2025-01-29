@@ -9,6 +9,15 @@ const globalStyles = StyleSheet.create({
     height: "100%",
   },
   actionButtonStyle: {
+    //position: "absolute",
+    paddingHorizontal: 64,
+    //bottom: 16 * 4, // bottom-1
+    width: "100%", // w-full
+    flexDirection: "row",
+    justifyContent: "space-between", // justify-between
+    //paddingVertical: 16,
+  },
+  dupActionButtonStyle: {
     position: "absolute",
     paddingHorizontal: 64,
     bottom: 16 * 4, // bottom-1

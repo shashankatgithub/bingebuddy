@@ -54,6 +54,7 @@ export interface Movie {
   } | null;
   watch_providers?: WatchProviderInfo | null;
   spoken_languages?: Language[] | null;
+  type: string | null;
 }
 
 export interface TVShow {

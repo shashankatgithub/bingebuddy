@@ -134,11 +134,23 @@ const CardDetailsModal: React.FC<CardDetailsModalProps> = ({
           </ScrollView>
 
           <View style={styles.moreLikeThis}>
-            <ActionButtons
-              times={undefined}
-              star={undefined}
-              heart={undefined}
-            />
+          <ActionButtons
+                buttons={[
+                  {
+                    icon: "times",
+                    onPress: () => console.log("Pressed on the left button"),
+                  },
+                  {
+                    icon: "star",
+                    onPress: () => console.log("Pressed on the up button"),
+                  },
+                  {
+                    icon: "heart",
+                    onPress: () => console.log("Pressed on the right button"),
+                  },
+                ]}
+                //containerStyle={globalStyles.actionButtonStyle}
+              />
           </View>
           {/* Action Buttons */}
           <View style={styles.bottomButtons}>

@@ -11,6 +11,7 @@ import ProfileScreen from "./(main)/profile/ProfileScreen";
 import FilterScreen from "@/src/app/(main)/filter/FilterScreen";
 import HomeScreen from "./(main)/home/homeScreen";
 import { enableLayoutAnimations } from 'react-native-reanimated';
+import SocialScreen from './(main)/social/SocialScreen';
 enableLayoutAnimations(true); // Enables logs for layout animations
 //const storage = new MMKV();
 
@@ -18,7 +19,8 @@ SplashScreen.preventAutoHideAsync();
 const RootNavigation = () => {
   const screens = [
     { name: "Search", component: SearchScreen, icon: "search" },
-    { name: "Filter", component: FilterScreen, icon: "filter" },
+    //{ name: "Filter", component: FilterScreen, icon: "filter" },
+    { name: "Social", component: SocialScreen, icon: "people-outline" },
     { name: "Home", component: HomeScreen, icon: "compass" },
     { name: "Profile", component: ProfileScreen, icon: "person" },
   ];

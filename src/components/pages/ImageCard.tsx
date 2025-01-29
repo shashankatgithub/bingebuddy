@@ -1,9 +1,20 @@
-import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
+import {
+  GestureDetector,
+  Gesture,
+  ScrollView,
+} from "react-native-gesture-handler";
 import CardDetailsModal from "../organisms/CardDetailsModal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Animated, {
   interpolate,
@@ -11,19 +22,38 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { useTapGesture, usePanGesture } from "../molecules/Gestures";
-import { MOVIE_IMAGE_BASE_URL, SUPPORTED_GENRES } from "@/src/constants/Configuration";
+import {
+  MOVIE_IMAGE_BASE_URL,
+  SUPPORTED_GENRES,
+} from "@/src/constants/Configuration";
 import { ImageCardType } from "../atoms/types";
-import { handleSwipeLeft, handleSwipeRight, handleSwipeUp } from "../molecules/SwipeHandler";
+import {
+  handleSwipeLeft,
+  handleSwipeRight,
+  handleSwipeUp,
+} from "../molecules/SwipeHandler";
+import ActionButtons from "../organisms/ActionButtons";
+import { globalStyles } from "@/src/styles";
+import { addToWatchlist } from "@/src/state/userSlice";
 
 const screenWidth = Dimensions.get("screen").width;
 
 export const imageCardWidth = screenWidth * 0.9;
 
-const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => {
+const ImageCard = ({
+  movie,
+  numOfCards,
+  index,
+  activeIndex,
+}: ImageCardType) => {
+  const isBlankCard = movie.type === "blank";
   const dispatch = useDispatch();
   const translationX = useSharedValue(0);
   const translationY = useSharedValue(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMovies, setSelectedMovies] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const getGenreNames = (genreIds) => {
     return genreIds
@@ -34,6 +64,9 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => 
       .filter(Boolean) // Remove null values
       .join(", "); // Join names with commas
   };
+  const { likes, dislikes, alreadyWatched } = useSelector(
+    (state: any) => state.user
+  );
 
   const animatedCard = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -68,6 +101,21 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => 
     setModalVisible(true);
   });
 
+  const handleSelectMovie = (movieId: number) => {
+    setSelectedMovies((prev) => ({ ...prev, [movieId]: !prev[movieId] }));
+  };
+
+  // Function to add selected movies to watchlist (you need to implement this action)
+  const saveToWatchList = () => {
+    Object.keys(selectedMovies).forEach((movieId) => {
+      if (selectedMovies[movieId]) {
+        // Assuming you have an action to add to watchlist in your Redux slice
+        dispatch(addToWatchlist(movie)); // Replace with actual movie data
+      }
+    });
+    setSelectedMovies({});
+  };
+
   const panGesture = usePanGesture(
     translationX,
     translationY,
@@ -79,6 +127,140 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => 
     handleSwipeUp,
     dispatch
   );
+  const regenerateRecommendations = () => {
+    // Here you would call whatever function or dispatch an action to refresh movie recommendations
+    console.log("Regenerating recommendations");
+  };
+  const buttonTapGesture = Gesture.Tap().onStart(() => {
+    console.log("Button pressed");
+  });
+
+  if (isBlankCard) {
+    return (
+      <Animated.View style={[styles.card, animatedCard]}>
+        <View style={styles.blankContainer}>
+          <ScrollView
+            style={{ width: "100%" }}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
+            <Text style={[styles.blankText, styles.sectionTitle]}>
+              Liked Movies:
+            </Text>
+            <View style={styles.movieGrid}>
+              {likes.map((movie: any, i: number) => (
+                <TouchableOpacity
+                  key={`liked-${i}`}
+                  style={[
+                    styles.movieTile,
+                    selectedMovies[movie.id] && styles.selectedTile,
+                  ]}
+                  onPress={() => handleSelectMovie(movie.id)}
+                >
+                  <Image
+                    source={{
+                      uri: `${MOVIE_IMAGE_BASE_URL}${movie.poster_path}`,
+                    }}
+                    style={styles.moviePosterLarge}
+                  />
+                  {selectedMovies[movie.id] && (
+                    <View style={styles.checkmarkOverlay}>
+                      <Text style={styles.checkmarkText}>✔</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Render Disliked Movies Section Only If There Are Disliked Movies */}
+            {dislikes.length > 0 && (
+              <>
+                <Text style={[styles.blankText, styles.sectionTitle]}>
+                  Disliked Movies:
+                </Text>
+                <View style={styles.movieGrid}>
+                  {dislikes.map((movie: any, i: number) => (
+                    <TouchableOpacity
+                      key={`disliked-${i}`}
+                      style={[
+                        styles.movieTile,
+                        selectedMovies[movie.id] && styles.selectedTile,
+                      ]}
+                      onPress={() => handleSelectMovie(movie.id)}
+                    >
+                      <Image
+                        source={{
+                          uri: `${MOVIE_IMAGE_BASE_URL}${movie.poster_path}`,
+                        }}
+                        style={styles.moviePosterLarge}
+                      />
+                      {selectedMovies[movie.id] && (
+                        <View style={styles.checkmarkOverlay}>
+                          <Text style={styles.checkmarkText}>✔</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            )}
+
+            {/* Render Already Watched Section Only If There Are Watched Movies */}
+            {alreadyWatched.length > 0 && (
+              <>
+                <Text style={[styles.blankText, styles.sectionTitle]}>
+                  Already Watched:
+                </Text>
+                <View style={styles.movieGrid}>
+                  {alreadyWatched.map((movie: any, i: number) => (
+                    <TouchableOpacity
+                      key={`watched-${i}`}
+                      style={[
+                        styles.movieTile,
+                        selectedMovies[movie.id] && styles.selectedTile,
+                      ]}
+                      onPress={() => handleSelectMovie(movie.id)}
+                    >
+                      <Image
+                        source={{
+                          uri: `${MOVIE_IMAGE_BASE_URL}${movie.poster_path}`,
+                        }}
+                        style={styles.moviePosterLarge}
+                      />
+                      {selectedMovies[movie.id] && (
+                        <View style={styles.checkmarkOverlay}>
+                          <Text style={styles.checkmarkText}>✔</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            )}
+          </ScrollView>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              onPress={saveToWatchList}
+              style={[
+                styles.button,
+                !Object.values(selectedMovies).some((value) => value) &&
+                  styles.disabledButton,
+              ]}
+              disabled={!Object.values(selectedMovies).some((value) => value)}
+            >
+              <Text style={styles.buttonText}>Add to Watchlist</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={regenerateRecommendations}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Regenerate Recommendations</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Animated.View>
+    );
+  }
 
   return (
     <GestureDetector gesture={Gesture.Race(tapGesture, panGesture)}>
@@ -93,16 +275,15 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => 
       >
         <Image
           style={[StyleSheet.absoluteFillObject, styles.image]}
-          source={{ 
+          source={{
             uri: `${MOVIE_IMAGE_BASE_URL}${movie.poster_path}`,
-                        method: "POST",
-                        headers: {
-                          Pragma: "no-cache",
-                        },
-                        body: "Your Body goes here",
-                      
-            
-            //uri: movie.poster_path 
+            method: "POST",
+            headers: {
+              Pragma: "no-cache",
+            },
+            body: "Your Body goes here",
+
+            //uri: movie.poster_path
           }}
         />
         <LinearGradient
@@ -112,12 +293,36 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => 
             "rgba(0,0,0,1)", // End fully opaque black
           ]}
           style={[StyleSheet.absoluteFillObject, styles.overlay]}
+          pointerEvents="none"
         />
 
-        <View style={styles.footer}>
+        <View style={styles.footer} pointerEvents="box-none">
           <Text style={styles.name}>{movie.title}</Text>
           <Text style={styles.genre}>{getGenreNames(movie.genre_ids)}</Text>
-          <Text style={styles.yearAndDuration}>{movie.release_date?.split("-")[0]}, {movie.runtime}m</Text>
+          <Text style={styles.yearAndDuration}>
+            {movie.release_date?.split("-")[0]}, {movie.runtime}m
+          </Text>
+          <GestureDetector gesture={buttonTapGesture}>
+            <View style={{ zIndex: 10 }}>
+              <ActionButtons
+                buttons={[
+                  {
+                    icon: "times",
+                    onPress: () => console.log("Pressed on the left button"),
+                  },
+                  {
+                    icon: "star",
+                    onPress: () => console.log("Pressed on the up button"),
+                  },
+                  {
+                    icon: "heart",
+                    onPress: () => console.log("Pressed on the right button"),
+                  },
+                ]}
+                containerStyle={globalStyles.actionButtonStyle}
+              />
+            </View>
+          </GestureDetector>
         </View>
         <CardDetailsModal
           isVisible={modalVisible}
@@ -132,7 +337,7 @@ const ImageCard = ({ movie, numOfCards, index, activeIndex }: ImageCardType) => 
 const styles = StyleSheet.create({
   card: {
     width: imageCardWidth,
-    aspectRatio: 1 / 1.87,
+    aspectRatio: 1 / 1.9,
     borderRadius: 15,
     justifyContent: "flex-end",
 
@@ -179,6 +384,87 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
     fontFamily: "InterBold",
+  },
+  blankContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 20,
+  },
+  blankText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "gray",
+    marginBottom: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  movieItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  moviePoster: {
+    width: 50,
+    height: 75,
+    resizeMode: "cover",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
+  },
+  button: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+  },
+  movieGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  movieTile: {
+    width: "30%", // Three columns
+    aspectRatio: 2 / 3, // Adjust for movie poster size
+    marginBottom: 10,
+    position: "relative",
+  },
+  moviePosterLarge: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
+  selectedTile: {
+    borderWidth: 2,
+    borderColor: "#007BFF",
+  },
+  checkmarkOverlay: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    backgroundColor: "#007BFF",
+    borderRadius: 10,
+    padding: 2,
+  },
+  checkmarkText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  disabledButton: {
+    backgroundColor: "#d3d3d3",
   },
 });
 
