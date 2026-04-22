@@ -157,6 +157,11 @@ API_BASE_URL=http://localhost:8000   # Python backend
 
 ---
 
+## Wireframes
+
+<img width="2227" height="5856" alt="BingeBuddyWireframes" src="https://github.com/user-attachments/assets/1e8a1ba1-fc50-4cec-b162-2c2cf1ba10b9" />
+
+
 ## About
 
 Built by **Shashank Srivastava** ([@shashankatgithub](https://github.com/shashankatgithub)), **Reetika** ([@Reetika002](https://github.com/Reetika002)) and **Nirmit Srivastava** ([@nirmitsrivastava](https://github.com/nirmitsrivastava)).
